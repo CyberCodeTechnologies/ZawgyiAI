@@ -1,0 +1,35 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Robot Head -->
+  <rect x="50" y="40" width="100" height="80" rx="15" fill="url(#logoGradient)"/>
+  
+  <!-- Eyes -->
+  <circle cx="75" cy="70" r="8" fill="#ffffff"/>
+  <circle cx="125" cy="70" r="8" fill="#ffffff"/>
+  <circle cx="75" cy="70" r="4" fill="#667eea"/>
+  <circle cx="125" cy="70" r="4" fill="#667eea"/>
+  
+  <!-- Mouth -->
+  <rect x="80" y="90" width="40" height="8" rx="4" fill="#ffffff"/>
+  
+  <!-- Antenna -->
+  <line x1="100" y1="40" x2="100" y2="25" stroke="#667eea" stroke-width="3"/>
+  <circle cx="100" cy="22" r="5" fill="#764ba2"/>
+  
+  <!-- Body -->
+  <rect x="60" y="120" width="80" height="60" rx="10" fill="url(#logoGradient)"/>
+  
+  <!-- Arms -->
+  <rect x="40" y="130" width="20" height="40" rx="10" fill="#667eea"/>
+  <rect x="140" y="130" width="20" height="40" rx="10" fill="#667eea"/>
+  
+  <!-- Screen Display -->
+  <rect x="70" y="135" width="60" height="30" rx="5" fill="#ffffff"/>
+  <text x="100" y="155" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#667eea">ZAWGYI</text>
+</svg>
