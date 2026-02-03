@@ -158,7 +158,7 @@ class SurveillanceCapability extends ZawgyiCapability {
             // Set up permissions and user agent
             await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
             
-            const activePort = process.env.ACTIVE_PORT || process.env.PORT || 3005;
+            const activePort = process.env.ACTIVE_PORT || process.env.PORT || 30050;
             
             // Grant camera permissions
             const context = browser.defaultBrowserContext();
@@ -278,7 +278,7 @@ class SurveillanceCapability extends ZawgyiCapability {
                 ]
             });
             const page = await browser.newPage();
-            const activePort = process.env.ACTIVE_PORT || process.env.PORT || 3005;
+            const activePort = process.env.ACTIVE_PORT || process.env.PORT || 30050;
 
             // Clear old capture if exists to avoid false positives
             const latest = path.join(this.logsDir, 'latest_capture.jpg');
@@ -394,7 +394,7 @@ class SurveillanceCapability extends ZawgyiCapability {
             });
 
             const page = await browser.newPage();
-            const activePort = process.env.ACTIVE_PORT || process.env.PORT || 3005;
+            const activePort = process.env.ACTIVE_PORT || process.env.PORT || 30050;
             
             // Grant camera permissions
             const context = browser.defaultBrowserContext();

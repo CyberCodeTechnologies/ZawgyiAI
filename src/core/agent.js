@@ -102,6 +102,47 @@ class Agent {
             };
         }
 
+        // Camera and surveillance commands
+        if (lowerMessage.includes('camera') || lowerMessage.includes('photo') || lowerMessage.includes('capture')) {
+            let action = 'take_photo';
+            if (lowerMessage.includes('status')) action = 'get_camera_status';
+            if (lowerMessage.includes('test')) action = 'test_camera';
+            if (lowerMessage.includes('detect')) action = 'detect_cameras';
+            if (lowerMessage.includes('video') && lowerMessage.includes('start')) action = 'start_video_recording';
+            if (lowerMessage.includes('video') && lowerMessage.includes('stop')) action = 'stop_video_recording';
+            
+            return {
+                skill: 'surveillance',
+                action: action,
+                parameters: {},
+                missing_info: []
+            };
+        }
+
+        if (lowerMessage.includes('screenshot') || lowerMessage.includes('screen') || lowerMessage.includes('capture screen')) {
+            return {
+                skill: 'surveillance',
+                action: 'take_screenshot',
+                parameters: {},
+                missing_info: []
+            };
+        }
+
+        if (lowerMessage.includes('monitor') || lowerMessage.includes('surveillance') || lowerMessage.includes('security')) {
+            let action = 'take_photo';
+            if (lowerMessage.includes('status')) action = 'get_camera_status';
+            if (lowerMessage.includes('recent')) action = 'get_recent_captures';
+            if (lowerMessage.includes('start') && lowerMessage.includes('monitor')) action = 'start_monitoring';
+            if (lowerMessage.includes('stop') && lowerMessage.includes('monitor')) action = 'stop_monitoring';
+            
+            return {
+                skill: 'surveillance',
+                action: action,
+                parameters: {},
+                missing_info: []
+            };
+        }
+
         if (lowerMessage.includes('create universe') || lowerMessage.includes('add entity') || lowerMessage.includes('simulate') || lowerMessage.includes('calculate')) {
             let action = 'calculate';
             if (lowerMessage.includes('create universe')) action = 'create_universe';

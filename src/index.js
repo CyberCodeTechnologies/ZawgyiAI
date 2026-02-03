@@ -253,6 +253,9 @@ class ZawgyiAI {
             
             // Start the server
             this.app.listen(port, () => {
+                // Set the active port for other components to use
+                process.env.ACTIVE_PORT = port.toString();
+                
                 console.log(`🚀 ZawgyiAI started on port ${port}`);
                 console.log(`🌐 Web interface: http://localhost:${port}`);
                 console.log(`🤖 Framework: ZawgyiAI Framework v1.0.0`);
