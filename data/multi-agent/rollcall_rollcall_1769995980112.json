@@ -1,0 +1,91 @@
+{
+  "agents": [
+    {
+      "id": "worker_1"
+    },
+    {
+      "id": "analyzer_1"
+    }
+  ],
+  "checklist": [
+    "system_check",
+    "memory_usage"
+  ],
+  "reporting": "summary",
+  "rollcall_id": "rollcall_1769995980112",
+  "conducted_by": "system",
+  "conducted_at": "2026-02-02T01:33:00.112Z",
+  "agent_status": [
+    {
+      "agent_id": "worker_1",
+      "status": "active",
+      "last_seen": "2026-02-02T00:36:14.720Z",
+      "health_score": 97,
+      "current_tasks": 4
+    },
+    {
+      "agent_id": "analyzer_1",
+      "status": "active",
+      "last_seen": "2026-02-02T01:03:47.807Z",
+      "health_score": 99,
+      "current_tasks": 1
+    }
+  ],
+  "checklist_results": [
+    {
+      "checklist_item": "system_check",
+      "agents_compliant": 2,
+      "compliance_rate": 90,
+      "issues": []
+    },
+    {
+      "checklist_item": "memory_usage",
+      "agents_compliant": 2,
+      "compliance_rate": 87,
+      "issues": []
+    }
+  ],
+  "reports": [
+    {
+      "agent_id": "worker_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 18,
+        "average_response_time": 121,
+        "success_rate": 99,
+        "errors": 2
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    },
+    {
+      "agent_id": "analyzer_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 22,
+        "average_response_time": 113,
+        "success_rate": 86,
+        "errors": 2
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    }
+  ],
+  "issues": [],
+  "summary": {
+    "total_agents": 2,
+    "active_agents": 2,
+    "average_health_score": 98,
+    "total_issues": 0,
+    "overall_status": "healthy",
+    "recommendations": [
+      "Monitor offline agents",
+      "Address checklist compliance issues",
+      "Schedule maintenance for low-health agents"
+    ]
+  }
+}

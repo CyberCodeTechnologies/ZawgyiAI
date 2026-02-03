@@ -1,0 +1,432 @@
+[
+  {
+    "receiver": "user1",
+    "message": "Hello from ZawgyiAI Viber!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:25:20.444Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "Hello from ZawgyiAI Viber testing!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:33:38.237Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "Broadcast test from ZawgyiAI!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:34:49.083Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "Broadcast test from ZawgyiAI!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:34:51.373Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "id": "image_1770082523266",
+    "receiver": "user1",
+    "image_url": "https://picsum.photos/seed/zawgyi/400/300.jpg",
+    "caption": "Test image from ZawgyiAI",
+    "type": "picture",
+    "timestamp": "2026-02-03T01:35:23.266Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "id": "location_1770082543257",
+    "receiver": "user1",
+    "latitude": "16.8409",
+    "longitude": "96.1735",
+    "title": "Yangon, Myanmar",
+    "type": "location",
+    "timestamp": "2026-02-03T01:35:43.257Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "id": "contact_1770082558778",
+    "receiver": "user1",
+    "contact_name": "ZawgyiAI Support",
+    "contact_phone": "+95123456789",
+    "type": "contact",
+    "timestamp": "2026-02-03T01:35:58.778Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "Scheduled message from ZawgyiAI!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:37:01.627Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "id": "incoming_1770082821539",
+    "sender": "user3",
+    "sender_name": "Test User",
+    "message": "hello",
+    "type": "text",
+    "timestamp": "2026-02-03T01:40:21.539Z",
+    "direction": "incoming",
+    "status": "received"
+  },
+  {
+    "receiver": "user3",
+    "message": "Hello! This is ZawgyiAI auto-reply. How can I help you today?",
+    "type": "text",
+    "timestamp": "2026-02-03T01:40:23.167Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "id": "file_1770082859368",
+    "receiver": "user1",
+    "file_path": "c:/xampp/htdocs/Zawgyi/test_viber_file.txt",
+    "file_name": "ZawgyiAI_Test_File.txt",
+    "size": 142,
+    "type": "file",
+    "timestamp": "2026-02-03T01:40:59.368Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "Automated broadcast from ZawgyiAI!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:51:07.274Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "Automated broadcast from ZawgyiAI!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:51:08.871Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "id": "image_1770083470883",
+    "receiver": "user1",
+    "image_url": "https://picsum.photos/seed/zawgyi/400/300.jpg",
+    "caption": "Automated image from ZawgyiAI",
+    "type": "picture",
+    "timestamp": "2026-02-03T01:51:10.883Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:53:20.210Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:53:22.320Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:54:11.445Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:54:13.315Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:54:38.793Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:54:40.694Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:55:08.385Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:55:10.308Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:55:37.587Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:55:39.020Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:56:11.585Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:56:13.433Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:56:40.725Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:56:42.589Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:57:10.998Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:57:12.395Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:57:35.056Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:57:36.971Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:58:03.966Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:58:05.807Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:58:33.641Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:58:35.001Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:59:29.472Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T01:59:31.528Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:00:05.332Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:00:07.216Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:00:43.315Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:00:45.344Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:02:23.477Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:02:25.021Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user1",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:03:03.758Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "user2",
+    "message": "🤖 Automated broadcast from ZawgyiAI scheduler!",
+    "type": "text",
+    "timestamp": "2026-02-03T02:03:05.658Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "test_user",
+    "message": "Test message from comprehensive check",
+    "type": "text",
+    "timestamp": "2026-02-03T13:39:29.592Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "test_user",
+    "message": "Test message from comprehensive check",
+    "type": "text",
+    "timestamp": "2026-02-03T14:12:11.321Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "test_user",
+    "message": "Test message from comprehensive check",
+    "type": "text",
+    "timestamp": "2026-02-03T16:28:26.854Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "test_user",
+    "message": "Test message from comprehensive check",
+    "type": "text",
+    "timestamp": "2026-02-03T16:49:54.369Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "test_user",
+    "message": "Test message from comprehensive check",
+    "type": "text",
+    "timestamp": "2026-02-03T16:55:46.360Z",
+    "direction": "outgoing",
+    "status": "sent"
+  },
+  {
+    "receiver": "test_user",
+    "message": "Test message from comprehensive check",
+    "type": "text",
+    "timestamp": "2026-02-03T16:58:26.261Z",
+    "direction": "outgoing",
+    "status": "sent"
+  }
+]

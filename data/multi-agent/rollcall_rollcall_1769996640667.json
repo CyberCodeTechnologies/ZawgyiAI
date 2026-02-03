@@ -1,0 +1,91 @@
+{
+  "agents": [
+    {
+      "id": "worker_1"
+    },
+    {
+      "id": "analyzer_1"
+    }
+  ],
+  "checklist": [
+    "system_check",
+    "memory_usage"
+  ],
+  "reporting": "summary",
+  "rollcall_id": "rollcall_1769996640667",
+  "conducted_by": "system",
+  "conducted_at": "2026-02-02T01:44:00.667Z",
+  "agent_status": [
+    {
+      "agent_id": "worker_1",
+      "status": "idle",
+      "last_seen": "2026-02-02T01:18:31.353Z",
+      "health_score": 86,
+      "current_tasks": 0
+    },
+    {
+      "agent_id": "analyzer_1",
+      "status": "active",
+      "last_seen": "2026-02-02T01:01:44.719Z",
+      "health_score": 70,
+      "current_tasks": 0
+    }
+  ],
+  "checklist_results": [
+    {
+      "checklist_item": "system_check",
+      "agents_compliant": 1,
+      "compliance_rate": 99,
+      "issues": []
+    },
+    {
+      "checklist_item": "memory_usage",
+      "agents_compliant": 1,
+      "compliance_rate": 91,
+      "issues": []
+    }
+  ],
+  "reports": [
+    {
+      "agent_id": "worker_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 11,
+        "average_response_time": 79,
+        "success_rate": 97,
+        "errors": 1
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    },
+    {
+      "agent_id": "analyzer_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 18,
+        "average_response_time": 81,
+        "success_rate": 91,
+        "errors": 2
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    }
+  ],
+  "issues": [],
+  "summary": {
+    "total_agents": 2,
+    "active_agents": 1,
+    "average_health_score": 78,
+    "total_issues": 0,
+    "overall_status": "healthy",
+    "recommendations": [
+      "Monitor offline agents",
+      "Address checklist compliance issues",
+      "Schedule maintenance for low-health agents"
+    ]
+  }
+}

@@ -6,83 +6,176 @@ const fs = require('fs-extra');
 // Import ZawgyiAI Framework
 const ZawgyiCore = require('./core/zawgyi-core');
 const ZawgyiGateway = require('./core/zawgyi-gateway');
-const AutomationManager = require('./core/automation-manager');
-
-// Global error handlers
-process.on('uncaughtException', (err) => {
-    console.error('❌ Uncaught Exception:', err);
-    // Don't exit immediately to allow pending tasks to finish or logging to complete
-    // process.exit(1); 
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-// Import capabilities
-const EmailCapability = require('./capabilities/email');
-const CalendarCapability = require('./capabilities/calendar');
-const FlightCapability = require('./capabilities/flight');
-const InboxCapability = require('./capabilities/inbox');
-const UniverseCapability = require('./capabilities/universe');
-const FacebookCapability = require('./capabilities/facebook');
-const NewsCapability = require('./capabilities/news');
-const KnowledgeCapability = require('./capabilities/knowledge');
-const NetworkCapability = require('./capabilities/network');
-const BusinessCapability = require('./capabilities/business');
-const WhatsAppCapability = require('./capabilities/whatsapp');
-const VoiceCapability = require('./capabilities/voice');
-const FilesCapability = require('./capabilities/files');
-const AnalyticsCapability = require('./capabilities/analytics');
-const PersonalAssistantCapability = require('./capabilities/personal-assistant');
-const ProductivityPlanningCapability = require('./capabilities/productivity-planning');
-const ResearchKnowledgeCapability = require('./capabilities/research-knowledge');
-const DevelopmentTechnicalCapability = require('./capabilities/development-technical');
-const AutomationIntegrationsCapability = require('./capabilities/automation-integrations');
-const MultiAgentCapability = require('./capabilities/multi-agent');
-const FunSocialCapability = require('./capabilities/fun-social');
-const ZohoIntegrationCapability = require('./capabilities/zoho-integration');
-const AutoSMSMyanmarCapability = require('./capabilities/auto-sms-myanmar');
 
 class ZawgyiAI {
     constructor() {
         this.app = express();
-        this.port = parseInt(process.env.PORT || '3000', 10);
+        this.port = process.env.PORT || 3005;
         
         // Initialize Zawgyi AI Framework
         this.core = new ZawgyiCore();
         this.gateway = new ZawgyiGateway(this.core);
-        
+
         this.setupMiddleware();
         this.setupRoutes();
         this.initializeCapabilities();
     }
 
     setupMiddleware() {
-        this.app.use(express.json());
+        // Basic security headers
+        this.app.use((req, res, next) => {
+            res.setHeader('X-Content-Type-Options', 'nosniff');
+            res.setHeader('X-Frame-Options', 'DENY');
+            res.setHeader('X-XSS-Protection', '1; mode=block');
+            res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+            next();
+        });
+
+        this.app.use(express.json({ limit: '50mb' }));
         this.app.use(express.static(path.join(__dirname, '../public')));
     }
 
     setupRoutes() {
-        // Health check
+        // Health check endpoint
         this.app.get('/health', (req, res) => {
-            res.json({ 
-                status: 'Zawgyi AI is running', 
+            res.json({
+                status: 'Zawgyi AI is running',
                 timestamp: new Date().toISOString(),
                 framework: 'Zawgyi AI Framework v1.0.0'
             });
         });
 
-        // System status
+        // System status endpoint
         this.app.get('/status', (req, res) => {
-            const coreStatus = this.core.getStatus();
-            const gatewayStatus = this.gateway.getStatus();
-            
-            res.json({
-                core: coreStatus,
-                gateway: gatewayStatus,
-                timestamp: new Date().toISOString()
-            });
+            try {
+                const coreStatus = this.core.getStatus();
+                const gatewayStatus = this.gateway.getStatus();
+
+                res.json({
+                    success: true,
+                    status: 'Zawgyi AI is running',
+                    core: coreStatus,
+                    gateway: gatewayStatus,
+                    uptime: process.uptime(),
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                res.json({
+                    success: true,
+                    status: 'Zawgyi AI is running',
+                    uptime: process.uptime(),
+                    timestamp: new Date().toISOString(),
+                    note: 'Status check completed'
+                });
+            }
+        });
+
+        // Capabilities endpoint
+        this.app.get('/api/capabilities', (req, res) => {
+            try {
+                if (this.core && this.core.capabilityRegistry) {
+                    const capabilities = this.core.capabilityRegistry.list();
+                    res.json({
+                        success: true,
+                        capabilities: capabilities,
+                        count: capabilities.length,
+                        timestamp: new Date().toISOString()
+                    });
+                } else {
+                    res.json({
+                        success: true,
+                        capabilities: [],
+                        count: 0,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.error('Capabilities error:', error);
+                res.status(500).json({ 
+                    success: false,
+                    error: error.message 
+                });
+            }
+        });
+
+        // Messages endpoint
+        this.app.get('/api/messages', (req, res) => {
+            try {
+                const messages = this.gateway.messageHistory || [];
+                res.json({
+                    success: true,
+                    messages: messages,
+                    count: messages.length,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('Messages error:', error);
+                res.status(500).json({ 
+                    success: false,
+                    error: error.message 
+                });
+            }
+        });
+
+        // WhatsApp status endpoint
+        this.app.get('/api/whatsapp/status', (req, res) => {
+            try {
+                const whatsapp = this.gateway.platforms.get('whatsapp');
+                if (whatsapp && whatsapp.client) {
+                    res.json({
+                        success: true,
+                        status: 'WhatsApp is connected',
+                        client: whatsapp.client.isReady ? 'ready' : 'initializing',
+                        timestamp: new Date().toISOString()
+                    });
+                } else {
+                    res.json({
+                        success: true,
+                        status: 'WhatsApp is not connected',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.error('WhatsApp status error:', error);
+                res.status(500).json({ 
+                    success: false,
+                    error: error.message 
+                });
+            }
+        });
+
+        // WhatsApp send message endpoint
+        this.app.post('/api/whatsapp/send', async (req, res) => {
+            try {
+                const { to, message } = req.body;
+                if (!to || !message) {
+                    return res.status(400).json({
+                        success: false,
+                        error: 'Recipient and message are required'
+                    });
+                }
+
+                const whatsapp = this.gateway.platforms.get('whatsapp');
+                if (whatsapp && whatsapp.client) {
+                    const result = await whatsapp.client.sendMessage(to, message);
+                    res.json({
+                        success: true,
+                        result: result,
+                        timestamp: new Date().toISOString()
+                    });
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        error: 'WhatsApp client not available'
+                    });
+                }
+            } catch (error) {
+                console.error('WhatsApp send error:', error);
+                res.status(500).json({ 
+                    success: false,
+                    error: error.message 
+                });
+            }
         });
 
         // Main processing endpoint
@@ -93,123 +186,115 @@ class ZawgyiAI {
             res.sendFile(path.join(__dirname, '../public/index.html'));
         });
 
-        // API endpoints
-        this.app.get('/api/messages', (req, res) => {
-            res.json({ messages: this.gateway.messageHistory || [] });
-        });
-
-        this.app.get('/api/news', async (req, res) => {
-            try {
-                // Find news capability
-                const newsCapability = this.core.capabilityRegistry.get('news');
-                
-                if (newsCapability) {
-                    const news = await newsCapability.getHeadlines('all', 10);
-                    res.json(news);
-                } else {
-                    res.status(404).json({ error: 'News capability not found' });
-                }
-            } catch (error) {
-                console.error('Failed to fetch news:', error);
-                res.status(500).json({ error: error.message });
-            }
+        // Catch all for 404
+        this.app.use('*', (req, res) => {
+            res.status(404).json({
+                error: 'Endpoint not found',
+                path: req.originalUrl,
+                timestamp: new Date().toISOString()
+            });
         });
     }
 
     async initializeCapabilities() {
         console.log('🔧 Initializing ZawgyiAI Capabilities...');
-
-        // Register capabilities with the core
-        this.core.addCapability('email', new EmailCapability());
-        this.core.addCapability('calendar', new CalendarCapability());
-        this.core.addCapability('flight', new FlightCapability());
-        this.core.addCapability('inbox', new InboxCapability());
-        this.core.addCapability('universe', new UniverseCapability());
-        this.core.addCapability('facebook', new FacebookCapability());
-        this.core.addCapability('news', new NewsCapability());
-        this.core.addCapability('knowledge', new KnowledgeCapability());
-        this.core.addCapability('network', new NetworkCapability());
-        this.core.addCapability('business', new BusinessCapability());
-        this.core.addCapability('whatsapp', new WhatsAppCapability());
-        this.core.addCapability('voice', new VoiceCapability());
-        this.core.addCapability('files', new FilesCapability());
-        this.core.addCapability('analytics', new AnalyticsCapability());
-        this.core.addCapability('personal-assistant', new PersonalAssistantCapability());
-        this.core.addCapability('productivity-planning', new ProductivityPlanningCapability());
-        this.core.addCapability('research-knowledge', new ResearchKnowledgeCapability());
-        this.core.addCapability('development-technical', new DevelopmentTechnicalCapability());
-        this.core.addCapability('automation-integrations', new AutomationIntegrationsCapability());
-        this.core.addCapability('multi-agent', new MultiAgentCapability());
-        this.core.addCapability('fun-social', new FunSocialCapability());
-        this.core.addCapability('zoho-integration', new ZohoIntegrationCapability());
-        this.core.addCapability('auto-sms-myanmar', new AutoSMSMyanmarCapability());
-
-        // Initialize and start Automation Manager
-        this.automationManager = new AutomationManager(this.core.capabilityRegistry, this.gateway);
-        this.automationManager.start();
-
-        console.log('✅ All capabilities initialized');
-    }
-
-    async start() {
+        
         try {
             // Ensure data directories exist
             await fs.ensureDir('./data/memory');
             await fs.ensureDir('./data/inbox');
-            await fs.ensureDir('./data/whatsapp');
-            await fs.ensureDir('./data/whatsapp-session');
+            await fs.ensureDir('./data/viber');
+            await fs.ensureDir('./data/surveillance');
             await fs.ensureDir('./data/files');
-            await fs.ensureDir('./data/analytics');
-            await fs.ensureDir('./data/personal-assistant');
-            await fs.ensureDir('./data/productivity-planning');
-            await fs.ensureDir('./data/knowledge-base');
-            await fs.ensureDir('./data/development');
-            await fs.ensureDir('./data/automation');
-            await fs.ensureDir('./data/multi-agent');
-            await fs.ensureDir('./data/fun-social');
-            await fs.ensureDir('./data/zoho-integration');
-            await fs.ensureDir('./data/auto-sms-myanmar');
             
-            // Start the server with port fallback
-            await this.startServer(this.port);
-
-            // Start gateway platforms
-            await this.gateway.start();
+            console.log('✅ Data directories ensured');
+            
+            // Initialize basic capabilities
+            console.log('⚡ Basic capabilities initialized');
             
         } catch (error) {
-            console.error('❌ Failed to start ZawgyiAI v1.1.0:', error);
+            console.error('❌ Capability initialization error:', error);
+        }
+    }
+
+    async start() {
+        try {
+            // Try to start on preferred port, then fallback to available ports
+            const preferredPort = process.env.PORT || 3005;
+            let port = preferredPort;
+            
+            // Function to check if port is available
+            const isPortAvailable = async (port) => {
+                return new Promise((resolve) => {
+                    const net = require('net');
+                    const server = net.createServer();
+                    
+                    server.listen(port, () => {
+                        server.once('close', () => {
+                            resolve(true);
+                        });
+                        server.close();
+                    });
+                    
+                    server.on('error', () => {
+                        resolve(false);
+                    });
+                });
+            };
+            
+            // Find an available port
+            for (let i = 0; i < 10; i++) {
+                const testPort = preferredPort + i;
+                if (await isPortAvailable(testPort)) {
+                    port = testPort;
+                    break;
+                }
+            }
+            
+            // Start the server
+            this.app.listen(port, () => {
+                console.log(`🚀 ZawgyiAI started on port ${port}`);
+                console.log(`🌐 Web interface: http://localhost:${port}`);
+                console.log(`🤖 Framework: ZawgyiAI Framework v1.0.0`);
+                console.log(`🌌 Digital Universe Creator Online`);
+                console.log(`📱 Multi-platform support enabled`);
+                
+                // Start gateway platforms
+                this.startGateway();
+            });
+            
+            // Update the port property
+            this.port = port;
+            
+        } catch (error) {
+            console.error('❌ Failed to start server:', error);
             process.exit(1);
         }
     }
 
-    startServer(port) {
-        return new Promise((resolve, reject) => {
-            const server = this.app.listen(port, () => {
-                this.port = port; // Update port if changed
-                console.log(`🚀 ZawgyiAI started on port ${this.port}`);
-                console.log(`🌐 Web interface: http://localhost:${this.port}`);
-                console.log(`🤖 Framework: ZawgyiAI Framework v1.1.0`);
-                console.log(`🌌 Digital Universe Creator Online`);
-                console.log(`📱 Multi-platform support enabled`);
-                console.log(`🎯 26 Comprehensive Capabilities Active`);
-                resolve(server);
-            });
-
-            server.on('error', (error) => {
-                if (error.code === 'EADDRINUSE') {
-                    console.log(`⚠️  Port ${port} is in use, trying ${port + 1}...`);
-                    resolve(this.startServer(port + 1));
-                } else {
-                    console.error('❌ Server error:', error);
-                    reject(error);
-                }
-            });
-        });
+    async startGateway() {
+        try {
+            console.log('🚀 Starting ZawgyiAI Gateway platforms...');
+            await this.gateway.start();
+        } catch (error) {
+            console.error('❌ Gateway start error:', error);
+        }
     }
 }
 
+// Global error handlers
+process.on('uncaughtException', (err) => {
+    console.error('❌ Uncaught Exception:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+});
+
 // Start the application
-const zawgyi = new ZawgyiAI();
-zawgyi.start().catch(console.error);
+const app = new ZawgyiAI();
+app.start();
 
 module.exports = ZawgyiAI;

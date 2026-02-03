@@ -1,0 +1,93 @@
+{
+  "agents": [
+    {
+      "id": "worker_1"
+    },
+    {
+      "id": "analyzer_1"
+    }
+  ],
+  "checklist": [
+    "system_check",
+    "memory_usage"
+  ],
+  "reporting": "summary",
+  "rollcall_id": "rollcall_1769995380914",
+  "conducted_by": "system",
+  "conducted_at": "2026-02-02T01:23:00.914Z",
+  "agent_status": [
+    {
+      "agent_id": "worker_1",
+      "status": "busy",
+      "last_seen": "2026-02-02T01:14:52.094Z",
+      "health_score": 76,
+      "current_tasks": 4
+    },
+    {
+      "agent_id": "analyzer_1",
+      "status": "busy",
+      "last_seen": "2026-02-02T00:56:22.389Z",
+      "health_score": 74,
+      "current_tasks": 4
+    }
+  ],
+  "checklist_results": [
+    {
+      "checklist_item": "system_check",
+      "agents_compliant": 1,
+      "compliance_rate": 90,
+      "issues": []
+    },
+    {
+      "checklist_item": "memory_usage",
+      "agents_compliant": 2,
+      "compliance_rate": 84,
+      "issues": [
+        "Minor issue detected"
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "agent_id": "worker_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 17,
+        "average_response_time": 104,
+        "success_rate": 88,
+        "errors": 0
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    },
+    {
+      "agent_id": "analyzer_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 5,
+        "average_response_time": 84,
+        "success_rate": 89,
+        "errors": 0
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    }
+  ],
+  "issues": [],
+  "summary": {
+    "total_agents": 2,
+    "active_agents": 0,
+    "average_health_score": 75,
+    "total_issues": 0,
+    "overall_status": "healthy",
+    "recommendations": [
+      "Monitor offline agents",
+      "Address checklist compliance issues",
+      "Schedule maintenance for low-health agents"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "id": "order_1769960472645",
+    "item": "order coffee from starbucks",
+    "vendor": "amazon",
+    "details": {},
+    "status": "placed",
+    "user_id": "test_user_1",
+    "placed_at": "2026-02-01T15:41:12.645Z",
+    "estimated_delivery": "2 days"
+  }
+]

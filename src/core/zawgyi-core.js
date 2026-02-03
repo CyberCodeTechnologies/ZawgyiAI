@@ -6,25 +6,25 @@
 class ZawgyiCore {
     constructor() {
         this.name = "Zawgyi AI";
-        this.version = "1.0.0";
+        this.version = "1.1.1";
         this.capabilities = new Map();
         this.context = new Map();
         this.plugins = new Map();
         this.modules = new Map();
         this.services = new Map();
-        
+
         this.initializeCore();
     }
 
     initializeCore() {
         console.log(`🤖 ${this.name} v${this.version} - Core Framework Initializing`);
-        
+
         // Initialize core systems
         this.setupEventSystem();
         this.setupPluginSystem();
         this.setupContextManager();
         this.setupCapabilityRegistry();
-        
+
         console.log(`✅ ${this.name} Core Framework Ready`);
     }
 
@@ -110,24 +110,24 @@ class ZawgyiCore {
     async process(input, userId, platform = 'web') {
         try {
             console.log(`🧠 Processing: "${input}" from ${userId} on ${platform}`);
-            
+
             // Store input in context
             this.contextManager.set(userId, 'lastInput', input);
             this.contextManager.set(userId, 'lastPlatform', platform);
             this.contextManager.set(userId, 'lastInteraction', new Date().toISOString());
-            
+
             // Parse intent
             const intent = await this.parseIntent(input, userId);
-            
+
             // Execute capability
             const result = await this.capabilityRegistry.execute(intent.capability, intent.action, intent.params, userId);
-            
+
             // Store result in context
             this.contextManager.set(userId, 'lastResult', result);
-            
+
             // Emit event
             this.events.emit('processed', { userId, input, result, platform });
-            
+
             return result;
         } catch (error) {
             console.error(`❌ Processing error:`, error);
@@ -141,10 +141,10 @@ class ZawgyiCore {
 
     async parseIntent(input, userId) {
         const context = this.contextManager.getAll(userId);
-        
+
         // Simple intent parsing (can be enhanced with NLP)
         const lowerInput = input.toLowerCase();
-        
+
         // Email capabilities
         if (lowerInput.includes('email') || lowerInput.includes('mail')) {
             if (lowerInput.includes('send') || lowerInput.includes('compose')) {
@@ -153,7 +153,7 @@ class ZawgyiCore {
                 return { capability: 'email', action: 'read', params: {} };
             }
         }
-        
+
         // Calendar capabilities
         if (lowerInput.includes('calendar') || lowerInput.includes('meeting') || lowerInput.includes('event')) {
             if (lowerInput.includes('create') || lowerInput.includes('schedule')) {
@@ -162,7 +162,7 @@ class ZawgyiCore {
                 return { capability: 'calendar', action: 'read', params: {} };
             }
         }
-        
+
         // Flight capabilities
         if (lowerInput.includes('flight') || lowerInput.includes('check in')) {
             if (lowerInput.includes('check in')) {
@@ -171,12 +171,12 @@ class ZawgyiCore {
                 return { capability: 'flight', action: 'status', params: { text: input } };
             }
         }
-        
+
         // Inbox capabilities
         if (lowerInput.includes('inbox') || lowerInput.includes('organize')) {
             return { capability: 'inbox', action: 'organize', params: {} };
         }
-        
+
         // Universe capabilities
         if (lowerInput.includes('universe') || lowerInput.includes('simulate') || lowerInput.includes('create universe')) {
             if (lowerInput.includes('create')) {
@@ -191,7 +191,33 @@ class ZawgyiCore {
                 return { capability: 'universe', action: 'observe', params: { text: input } };
             }
         }
-        
+
+        // Multi-Agent capabilities
+        if (lowerInput.includes('agent') || lowerInput.includes('roll call') || lowerInput.includes('collaborate')) {
+            if (lowerInput.includes('spawn') || lowerInput.includes('create')) {
+                return { capability: 'multi-agent', action: 'spawn_agents', params: { agent_types: ['worker', 'analyzer'], tasks: [{ type: 'general', priority: 'medium' }] } };
+            } else if (lowerInput.includes('roll call') || lowerInput.includes('check status')) {
+                return { capability: 'multi-agent', action: 'daily_rollcall', params: { agents: [{ id: 'agent_1' }, { id: 'agent_2' }] } };
+            } else if (lowerInput.includes('collaborate') || lowerInput.includes('cooperation')) {
+                return { capability: 'multi-agent', action: 'collaborate_instances', params: { instances: ['local', 'remote'] } };
+            } else if (lowerInput.includes('improve') || lowerInput.includes('learn')) {
+                return { capability: 'multi-agent', action: 'self_improve', params: { improvement_areas: ['efficiency'] } };
+            }
+        }
+
+        // Personal Assistant capabilities
+        if (lowerInput.includes('remind') || lowerInput.includes('order') || lowerInput.includes('call') || lowerInput.includes('vault')) {
+            if (lowerInput.includes('remind')) {
+                return { capability: 'personal-assistant', action: 'send_reminder', params: { content: input, tool: 'notion' } };
+            } else if (lowerInput.includes('order') || lowerInput.includes('buy')) {
+                return { capability: 'personal-assistant', action: 'place_order', params: { item: input, vendor: 'amazon' } };
+            } else if (lowerInput.includes('call')) {
+                return { capability: 'personal-assistant', action: 'voice_call', params: { contact: 'Associate', topic: input } };
+            } else if (lowerInput.includes('vault') || lowerInput.includes('password')) {
+                return { capability: 'personal-assistant', action: 'manage_vault', params: { action: 'list', item: 'all' } };
+            }
+        }
+
         // Default response - Use Knowledge/Chat capability
         return { capability: 'knowledge', action: 'chat', params: { query: input } };
     }

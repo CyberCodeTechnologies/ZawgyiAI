@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viber Auto Messaging - ZawgyiAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            color: #7c3aed;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .viber-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section h2 {
+            color: #7c3aed;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6b7280, #9ca3af);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #34d399);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .message-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .message-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #f9fafb;
+            border-left: 4px solid #7c3aed;
+        }
+
+        .message-item.incoming {
+            border-left-color: #10b981;
+        }
+
+        .message-item.outgoing {
+            border-left-color: #3b82f6;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .online-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .offline-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6b7280;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #7c3aed;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <div class="viber-icon">V</div>
+                Viber Auto Messaging
+            </h1>
+            <p>Comprehensive Viber messaging platform powered by ZawgyiAI</p>
+        </div>
+
+        <div id="status" class="status" style="display: none;"></div>
+
+        <div class="main-content">
+            <!-- Send Message Section -->
+            <div class="section">
+                <h2>📤 Send Message</h2>
+                <div class="form-group">
+                    <label for="receiver">Receiver ID</label>
+                    <input type="text" id="receiver" placeholder="Enter Viber user ID">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" placeholder="Type your message here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="message-type">Message Type</label>
+                    <select id="message-type">
+                        <option value="text">Text</option>
+                        <option value="picture">Picture</option>
+                        <option value="file">File</option>
+                        <option value="location">Location</option>
+                        <option value="contact">Contact</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="sendMessage()">
+                    <span>📤</span> Send Message
+                </button>
+            </div>
+
+            <!-- Account Info Section -->
+            <div class="section">
+                <h2>📊 Account Information</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-messages">0</div>
+                        <div class="stat-label">Total Messages</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-contacts">0</div>
+                        <div class="stat-label">Contacts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="online-users">0</div>
+                        <div class="stat-label">Online Users</div>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="getAccountInfo()">
+                    <span>🔄</span> Refresh Account Info
+                </button>
+            </div>
+
+            <!-- Broadcast Section -->
+            <div class="section">
+                <h2>📢 Broadcast Message</h2>
+                <div class="form-group">
+                    <label for="broadcast-message">Broadcast Message</label>
+                    <textarea id="broadcast-message" placeholder="Enter message to broadcast to all contacts..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="recipients">Recipients (comma-separated)</label>
+                    <input type="text" id="recipients" placeholder="user1,user2,user3">
+                </div>
+                <button class="btn btn-success" onclick="broadcastMessage()">
+                    <span>📢</span> Broadcast
+                </button>
+            </div>
+
+            <!-- Contacts Section -->
+            <div class="section">
+                <h2>👥 Contacts</h2>
+                <div id="contacts-list" class="contact-list">
+                    <!-- Contacts will be loaded here -->
+                </div>
+                <button class="btn btn-secondary" onclick="getContacts()">
+                    <span>🔄</span> Refresh Contacts
+                </button>
+            </div>
+
+            <!-- Messages Section -->
+            <div class="section full-width">
+                <h2>💬 Message History</h2>
+                <div class="form-group">
+                    <label for="message-limit">Messages to Load</label>
+                    <select id="message-limit">
+                        <option value="10">Last 10</option>
+                        <option value="25">Last 25</option>
+                        <option value="50" selected>Last 50</option>
+                        <option value="100">Last 100</option>
+                    </select>
+                </div>
+                <div id="messages-list" class="message-list">
+                    <!-- Messages will be loaded here -->
+                </div>
+                <button class="btn btn-secondary" onclick="getMessages()">
+                    <span>🔄</span> Refresh Messages
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Features Section -->
+        <div class="section full-width">
+            <h2>⚙️ Advanced Features</h2>
+            <div class="main-content">
+                <!-- Auto Reply -->
+                <div class="section">
+                    <h3>🤖 Auto Reply</h3>
+                    <div class="form-group">
+                        <label for="auto-keyword">Keyword</label>
+                        <input type="text" id="auto-keyword" placeholder="Enter keyword">
+                    </div>
+                    <div class="form-group">
+                        <label for="auto-response">Response</label>
+                        <textarea id="auto-response" placeholder="Enter auto response"></textarea>
+                    </div>
+                    <button class="btn" onclick="setAutoReply()">
+                        <span>🤖</span> Set Auto Reply
+                    </button>
+                </div>
+
+                <!-- Schedule Message -->
+                <div class="section">
+                    <h3>⏰ Schedule Message</h3>
+                    <div class="form-group">
+                        <label for="schedule-receiver">Receiver</label>
+                        <input type="text" id="schedule-receiver" placeholder="Enter receiver ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-message">Message</label>
+                        <textarea id="schedule-message" placeholder="Enter message to schedule"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="schedule-time">Schedule Time</label>
+                        <input type="datetime-local" id="schedule-time">
+                    </div>
+                    <button class="btn" onclick="scheduleMessage()">
+                        <span>⏰</span> Schedule Message
+                    </button>
+                </div>
+
+                <!-- File Sharing -->
+                <div class="section">
+                    <h3>📎 File Sharing</h3>
+                    <div class="form-group">
+                        <label for="file-receiver">Receiver</label>
+                        <input type="text" id="file-receiver" placeholder="Enter receiver ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="file-path">File Path</label>
+                        <input type="text" id="file-path" placeholder="Enter file path">
+                    </div>
+                    <div class="form-group">
+                        <label for="file-name">File Name (optional)</label>
+                        <input type="text" id="file-name" placeholder="Custom file name">
+                    </div>
+                    <button class="btn" onclick="sendFile()">
+                        <span>📎</span> Send File
+                    </button>
+                </div>
+
+                <!-- Image Sharing -->
+                <div class="section">
+                    <h3>🖼️ Image Sharing</h3>
+                    <div class="form-group">
+                        <label for="image-receiver">Receiver</label>
+                        <input type="text" id="image-receiver" placeholder="Enter receiver ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="image-url">Image URL</label>
+                        <input type="text" id="image-url" placeholder="Enter image URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="image-caption">Caption</label>
+                        <input type="text" id="image-caption" placeholder="Enter image caption">
+                    </div>
+                    <button class="btn" onclick="sendImage()">
+                        <span>🖼️</span> Send Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeViber();
+            loadInitialData();
+        });
+
+        async function initializeViber() {
+            try {
+                const response = await fetch('/api/viber/account');
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Viber platform initialized successfully', 'success');
+                } else {
+                    showStatus('Viber platform not initialized. Please configure API token.', 'error');
+                }
+            } catch (error) {
+                showStatus('Failed to initialize Viber: ' + error.message, 'error');
+            }
+        }
+
+        async function loadInitialData() {
+            await Promise.all([
+                getAccountInfo(),
+                getContacts(),
+                getMessages()
+            ]);
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function sendMessage() {
+            const receiver = document.getElementById('receiver').value;
+            const message = document.getElementById('message').value;
+            const messageType = document.getElementById('message-type').value;
+
+            if (!receiver || !message) {
+                showStatus('Please enter receiver and message', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/viber/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        receiver: receiver,
+                        message: message,
+                        type: messageType
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Message sent successfully!', 'success');
+                    document.getElementById('message').value = '';
+                    getMessages(); // Refresh messages
+                } else {
+                    showStatus('Failed to send message: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error sending message: ' + error.message, 'error');
+            }
+        }
+
+        async function broadcastMessage() {
+            const message = document.getElementById('broadcast-message').value;
+            const recipients = document.getElementById('recipients').value;
+
+            if (!message || !recipients) {
+                showStatus('Please enter message and recipients', 'error');
+                return;
+            }
+
+            const recipientsArray = recipients.split(',').map(r => r.trim()).filter(r => r);
+
+            try {
+                const response = await fetch('/api/viber/broadcast', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        recipients: recipientsArray
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus(`Broadcast completed: ${result.summary.success} sent, ${result.summary.failed} failed`, 'success');
+                    document.getElementById('broadcast-message').value = '';
+                    document.getElementById('recipients').value = '';
+                } else {
+                    showStatus('Broadcast failed: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error broadcasting: ' + error.message, 'error');
+            }
+        }
+
+        async function getAccountInfo() {
+            try {
+                const response = await fetch('/api/viber/account');
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update stats
+                    document.getElementById('total-messages').textContent = result.account?.messages || 0;
+                    document.getElementById('total-contacts').textContent = result.account?.contacts || 0;
+                    
+                    // Get online users count
+                    const onlineResponse = await fetch('/api/viber/online-users');
+                    const onlineResult = await onlineResponse.json();
+                    if (onlineResult.success) {
+                        document.getElementById('online-users').textContent = onlineResult.total_online || 0;
+                    }
+                }
+            } catch (error) {
+                console.error('Error getting account info:', error);
+            }
+        }
+
+        async function getContacts() {
+            try {
+                const response = await fetch('/api/viber/contacts');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const contactsList = document.getElementById('contacts-list');
+                    contactsList.innerHTML = '';
+                    
+                    result.contacts.forEach(contact => {
+                        const contactDiv = document.createElement('div');
+                        contactDiv.className = 'contact-item';
+                        contactDiv.innerHTML = `
+                            <div class="contact-info">
+                                <div class="contact-avatar">${contact.name.charAt(0).toUpperCase()}</div>
+                                <div>
+                                    <div style="font-weight: 600;">${contact.name}</div>
+                                    <div style="color: #666; font-size: 0.9rem;">${contact.phone}</div>
+                                </div>
+                            </div>
+                            <div class="${contact.status === 'online' ? 'online-indicator' : 'offline-indicator'}"></div>
+                        `;
+                        contactsList.appendChild(contactDiv);
+                    });
+                    
+                    document.getElementById('total-contacts').textContent = result.contacts.length;
+                }
+            } catch (error) {
+                console.error('Error getting contacts:', error);
+            }
+        }
+
+        async function getMessages() {
+            const limit = document.getElementById('message-limit').value;
+            
+            try {
+                const response = await fetch(`/api/viber/messages?limit=${limit}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const messagesList = document.getElementById('messages-list');
+                    messagesList.innerHTML = '';
+                    
+                    result.messages.forEach(message => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `message-item ${message.direction}`;
+                        messageDiv.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>${message.direction === 'incoming' ? message.sender_name || message.sender : 'You'}</strong>
+                                <small style="color: #666;">${new Date(message.timestamp).toLocaleString()}</small>
+                            </div>
+                            <div>${message.message}</div>
+                        `;
+                        messagesList.appendChild(messageDiv);
+                    });
+                    
+                    document.getElementById('total-messages').textContent = result.total;
+                }
+            } catch (error) {
+                console.error('Error getting messages:', error);
+            }
+        }
+
+        async function setAutoReply() {
+            const keyword = document.getElementById('auto-keyword').value;
+            const response = document.getElementById('auto-response').value;
+
+            if (!keyword || !response) {
+                showStatus('Please enter keyword and response', 'error');
+                return;
+            }
+
+            try {
+                const apiResponse = await fetch('/api/viber/auto-reply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        keyword: keyword,
+                        response: response,
+                        enabled: true
+                    })
+                });
+
+                const result = await apiResponse.json();
+                
+                if (result.success) {
+                    showStatus('Auto-reply configured successfully!', 'success');
+                    document.getElementById('auto-keyword').value = '';
+                    document.getElementById('auto-response').value = '';
+                } else {
+                    showStatus('Failed to set auto-reply: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error setting auto-reply: ' + error.message, 'error');
+            }
+        }
+
+        async function scheduleMessage() {
+            const receiver = document.getElementById('schedule-receiver').value;
+            const message = document.getElementById('schedule-message').value;
+            const scheduleTime = document.getElementById('schedule-time').value;
+
+            if (!receiver || !message || !scheduleTime) {
+                showStatus('Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/viber/schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        receiver: receiver,
+                        message: message,
+                        schedule_time: scheduleTime
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Message scheduled successfully!', 'success');
+                    document.getElementById('schedule-receiver').value = '';
+                    document.getElementById('schedule-message').value = '';
+                    document.getElementById('schedule-time').value = '';
+                } else {
+                    showStatus('Failed to schedule message: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error scheduling message: ' + error.message, 'error');
+            }
+        }
+
+        async function sendFile() {
+            const receiver = document.getElementById('file-receiver').value;
+            const filePath = document.getElementById('file-path').value;
+            const fileName = document.getElementById('file-name').value;
+
+            if (!receiver || !filePath) {
+                showStatus('Please enter receiver and file path', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/viber/send-file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        receiver: receiver,
+                        file_path: filePath,
+                        file_name: fileName
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('File sent successfully!', 'success');
+                    document.getElementById('file-receiver').value = '';
+                    document.getElementById('file-path').value = '';
+                    document.getElementById('file-name').value = '';
+                } else {
+                    showStatus('Failed to send file: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error sending file: ' + error.message, 'error');
+            }
+        }
+
+        async function sendImage() {
+            const receiver = document.getElementById('image-receiver').value;
+            const imageUrl = document.getElementById('image-url').value;
+            const caption = document.getElementById('image-caption').value;
+
+            if (!receiver || !imageUrl) {
+                showStatus('Please enter receiver and image URL', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/viber/send-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        receiver: receiver,
+                        image_url: imageUrl,
+                        caption: caption
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showStatus('Image sent successfully!', 'success');
+                    document.getElementById('image-receiver').value = '';
+                    document.getElementById('image-url').value = '';
+                    document.getElementById('image-caption').value = '';
+                } else {
+                    showStatus('Failed to send image: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error sending image: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

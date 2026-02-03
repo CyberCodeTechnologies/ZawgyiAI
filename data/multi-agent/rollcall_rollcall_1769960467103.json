@@ -1,0 +1,86 @@
+{
+  "agents": [
+    {
+      "id": "agent_1"
+    },
+    {
+      "id": "agent_2"
+    }
+  ],
+  "checklist": [],
+  "reporting": "comprehensive",
+  "rollcall_id": "rollcall_1769960467103",
+  "conducted_by": "test_user_1",
+  "conducted_at": "2026-02-01T15:41:07.103Z",
+  "agent_status": [
+    {
+      "agent_id": "agent_1",
+      "status": "offline",
+      "last_seen": "2026-02-01T15:20:52.997Z",
+      "health_score": 73,
+      "current_tasks": 3
+    },
+    {
+      "agent_id": "agent_2",
+      "status": "offline",
+      "last_seen": "2026-02-01T15:13:24.823Z",
+      "health_score": 93,
+      "current_tasks": 4
+    }
+  ],
+  "checklist_results": [],
+  "reports": [
+    {
+      "agent_id": "agent_1",
+      "report_type": "comprehensive",
+      "metrics": {
+        "tasks_completed": 12,
+        "average_response_time": 132,
+        "success_rate": 93,
+        "errors": 2
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    },
+    {
+      "agent_id": "agent_2",
+      "report_type": "comprehensive",
+      "metrics": {
+        "tasks_completed": 23,
+        "average_response_time": 103,
+        "success_rate": 89,
+        "errors": 0
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "type": "agent_offline",
+      "severity": "high",
+      "description": "Agent undefined is offline"
+    },
+    {
+      "type": "agent_offline",
+      "severity": "high",
+      "description": "Agent undefined is offline"
+    }
+  ],
+  "summary": {
+    "total_agents": 2,
+    "active_agents": 0,
+    "average_health_score": 83,
+    "total_issues": 2,
+    "overall_status": "needs_attention",
+    "recommendations": [
+      "Monitor offline agents",
+      "Address checklist compliance issues",
+      "Schedule maintenance for low-health agents"
+    ]
+  }
+}

@@ -2,8 +2,9 @@ const { ZawgyiCapability } = require('../core/zawgyi-capability');
 // const OpenAI = require('openai');
 
 class KnowledgeCapability extends ZawgyiCapability {
-    constructor() {
+    constructor(core = null) {
         super('knowledge', 'Handles general knowledge, chat, and Q&A');
+        this.core = core;
         
         // this.openai = null; // OpenAI usage disabled
         
@@ -32,20 +33,49 @@ class KnowledgeCapability extends ZawgyiCapability {
             'farewell': 'Farewell! I\'m here when you need me.',
 
             // Help & Information (15)
-            'help': 'I can help you with various tasks including email management, calendar scheduling, flight tracking, universe simulations, and general knowledge. Just ask!',
-            'who are you': 'I\'m Zawgyi AI, your Digital Universe Creator and personal assistant.',
-            'what can you do': 'I can manage emails, schedule calendar events, track flights, create universe simulations, handle business tasks, and answer questions. I also support multi-platform communication via web, Telegram, and WhatsApp.',
+            'help': 'ZawgyiAI is an open-source personal AI assistant that runs locally on your devices. It works with WhatsApp, Telegram, Discord, and more—clearing your inbox, managing your calendar, and automating your workflows while you sleep.',
+            'who are you': 'ZawgyiAI is an open-source personal AI assistant that runs locally on your devices. It works with WhatsApp, Telegram, Discord, and more—clearing your inbox, managing your calendar, and automating your workflows while you sleep.',
+            'what can you do': 'I can clear your inbox, manage your calendar, and automate your workflows while you sleep—working with WhatsApp, Telegram, Discord, and more.',
             'time': `The current time is ${new Date().toLocaleString()}`,
             'date': `Today is ${new Date().toLocaleDateString()}`,
-            'what is your name': 'My name is Zawgyi AI, your Digital Universe Creator.',
-            '/start': 'Welcome to Zawgyi AI! 🚀\nI am your intelligent personal assistant.\n\nHere are some things I can do:\n📧 Manage Emails\n📅 Schedule Events\n✈️ Track Flights\n🌌 Simulate Universes\n\nType "help" to see more commands.',
-            'start': 'Welcome to Zawgyi AI! 🚀\nI am your intelligent personal assistant.\n\nHere are some things I can do:\n📧 Manage Emails\n📅 Schedule Events\n✈️ Track Flights\n🌌 Simulate Universes\n\nType "help" to see more commands.',
-            'get started': 'Welcome to Zawgyi AI! 🚀\nI am your intelligent personal assistant.\n\nHere are some things I can do:\n📧 Manage Emails\n📅 Schedule Events\n✈️ Track Flights\n🌌 Simulate Universes\n\nType "help" to see more commands.',
-            'commands': 'Available commands: help, email, calendar, flight, universe, weather, news, calculator, timer, reminder, notes, and more!',
+            'what is your name': 'My name is ZawgyiAI.',
+            '/start': 'ZawgyiAI is an open-source personal AI assistant that runs locally on your devices. It works with WhatsApp, Telegram, Discord, and more—clearing your inbox, managing your calendar, and automating your workflows while you sleep.',
+            'start': 'ZawgyiAI is an open-source personal AI assistant that runs locally on your devices. It works with WhatsApp, Telegram, Discord, and more—clearing your inbox, managing your calendar, and automating your workflows while you sleep.',
+            'get started': 'ZawgyiAI is an open-source personal AI assistant that runs locally on your devices. It works with WhatsApp, Telegram, Discord, and more—clearing your inbox, managing your calendar, and automating your workflows while you sleep.',
+            'commands': 'Try: "Check my emails", "Schedule a meeting", "Check in for flight", "Clear inbox", or "Help".',
             'features': 'My features include email management, calendar scheduling, flight tracking, universe simulation, weather updates, news, calculations, timers, reminders, and note-taking.',
             'what can i ask': 'You can ask about emails, calendar events, flights, weather, news, calculations, general knowledge, or request help with various tasks.',
             'how to use': 'Simply type your question or command in natural language, and I\'ll understand and help you!',
             'tutorial': 'Start by saying "hello" or "help" to see what I can do. Try asking about your emails, calendar, or the weather!',
+
+            // File Editor Commands (10)
+            '\\list': 'Use "\\list" or "\\ls" to list files and folders in the current directory.',
+            '\\ls': 'Use "\\list" or "\\ls" to list files and folders in the current directory.',
+            '\\cd': 'Use "\\cd foldername" to change to a different directory. Example: "\\cd gTrack"',
+            '\\read': 'Use "\\read filename" to read the contents of a file. Example: "\\read sample.js"',
+            '\\write': 'Use "\\write filename" to create or edit a file. Example: "\\write newfile.js"',
+            '\\create': 'Use "\\create filename" to create a new empty file. Example: "\\create test.js"',
+            '\\delete': 'Use "\\delete filename" to delete a file or folder. Example: "\\delete oldfile.js"',
+            '\\mkdir': 'Use "\\mkdir foldername" to create a new folder. Example: "\\mkdir myproject"',
+            '\\pwd': 'Use "\\pwd" to show the current working directory.',
+            '\\path': 'Use "\\path" to show the current working directory.',
+
+            // Viber Commands (15)
+            '\\viber': 'Use "\\viber" to initialize Viber platform.',
+            '\\viber_init': 'Use "\\viber_init" to initialize Viber connection.',
+            '\\viber_send': 'Use "\\viber_send user message" to send message to Viber user.',
+            '\\viber_broadcast': 'Use "\\viber_broadcast message" to broadcast to all Viber contacts.',
+            '\\viber_contacts': 'Use "\\viber_contacts" to get Viber contacts list.',
+            '\\viber_messages': 'Use "\\viber_messages" to get Viber message history.',
+            '\\viber_account': 'Use "\\viber_account" to get Viber account information.',
+            '\\viber_file': 'Use "\\viber_file user filepath" to send file via Viber.',
+            '\\viber_image': 'Use "\\viber_image user url caption" to send image via Viber.',
+            '\\viber_webhook': 'Use "\\viber_webhook url" to set Viber webhook.',
+            '\\viber_auto': 'Use "\\viber_auto keyword response" to set auto-reply.',
+            '\\viber_schedule': 'Use "\\viber_schedule user message time" to schedule message.',
+            '\\viber_group': 'Use "\\viber_group name participants" to create group.',
+            '\\viber_online': 'Use "\\viber_online" to get online users.',
+            '\\viber_location': 'Use "\\viber_location user lat lon title" to send location.',
 
             // Science & Technology (30)
             'what is science': 'Science is the systematic study of the natural world through observation and experimentation.',
@@ -255,8 +285,14 @@ class KnowledgeCapability extends ZawgyiCapability {
             return { message: 'I am listening. How can I help you?' };
         }
 
-        // Check basic knowledge base first
         const lowerQuery = query.toLowerCase().trim();
+        
+        // Handle file editor commands
+        if (lowerQuery.startsWith('\\') || lowerQuery.startsWith('/')) {
+            return await this.handleFileEditorCommand(query, userId);
+        }
+
+        // Check basic knowledge base first
         for (const [key, response] of Object.entries(this.basicKnowledge)) {
             if (lowerQuery.includes(key)) {
                 return { 
@@ -269,10 +305,184 @@ class KnowledgeCapability extends ZawgyiCapability {
 
         // Default response when no knowledge is found
         return {
-            message: "I can help with emails, calendar, flights, and universe simulation. For general questions, I'm limited to my basic knowledge right now.",
+            message: "I can help with emails, calendar, flights, universe simulation, and file editing. Use \\help for file editor commands.",
             fallback: true,
             source: 'basic_knowledge_default'
         };
+    }
+
+    async handleFileEditorCommand(command, userId) {
+        // Get the file editor from the core registry
+        const fileEditor = this.core ? this.core.capabilityRegistry.get('file-editor') : null;
+        
+        if (!fileEditor) {
+            return {
+                message: 'File Editor capability is not available.',
+                error: true
+            };
+        }
+
+        const parts = command.trim().split(' ');
+        const cmd = parts[0].toLowerCase();
+        const args = parts.slice(1).join(' ');
+
+        try {
+            switch (cmd) {
+                case '\\list':
+                case '\\ls':
+                    const listResult = await fileEditor.listFiles({ path: args }, userId);
+                    return {
+                        message: listResult.success ? listResult.message : `❌ ${listResult.message}`,
+                        success: listResult.success
+                    };
+
+                case '\\cd':
+                    if (!args) {
+                        return { message: 'Usage: \\cd foldername' };
+                    }
+                    const cdResult = await fileEditor.changeDirectory({ path: args }, userId);
+                    return {
+                        message: cdResult.success ? cdResult.message : `❌ ${cdResult.message}`,
+                        success: cdResult.success
+                    };
+
+                case '\\read':
+                    if (!args) {
+                        return { message: 'Usage: \\read filename' };
+                    }
+                    const readResult = await fileEditor.readFile({ filename: args }, userId);
+                    return {
+                        message: readResult.success ? readResult.message : `❌ ${readResult.message}`,
+                        success: readResult.success
+                    };
+
+                case '\\write':
+                case '\\create':
+                    if (!args) {
+                        return { message: `Usage: ${cmd} filename\\nContent: Send the file content in the next message.` };
+                    }
+                    // For write/create, we need to handle multi-step process
+                    // For now, create empty file
+                    const createResult = await fileEditor.createFile({ filename: args }, userId);
+                    return {
+                        message: createResult.success ? createResult.message : `❌ ${createResult.message}`,
+                        success: createResult.success
+                    };
+
+                case '\\delete':
+                    if (!args) {
+                        return { message: 'Usage: \\delete filename' };
+                    }
+                    const deleteResult = await fileEditor.deleteFile({ filename: args }, userId);
+                    return {
+                        message: deleteResult.success ? deleteResult.message : `❌ ${deleteResult.message}`,
+                        success: deleteResult.success
+                    };
+
+                case '\\mkdir':
+                    if (!args) {
+                        return { message: 'Usage: \\mkdir foldername' };
+                    }
+                    const mkdirResult = await fileEditor.createFolder({ foldername: args }, userId);
+                    return {
+                        message: mkdirResult.success ? mkdirResult.message : `❌ ${mkdirResult.message}`,
+                        success: mkdirResult.success
+                    };
+
+                case '\\pwd':
+                case '\\path':
+                    const pwdResult = await fileEditor.getCurrentPath({}, userId);
+                    return {
+                        message: pwdResult.success ? pwdResult.message : `❌ ${pwdResult.message}`,
+                        success: pwdResult.success
+                    };
+
+                // Viber Commands
+                case '\\viber':
+                case '\\viber_init':
+                    const viberInitResult = await this.handleViberCommand('initializeViber', {}, userId);
+                    return {
+                        message: viberInitResult.success ? viberInitResult.message : `❌ ${viberInitResult.message}`,
+                        success: viberInitResult.success
+                    };
+
+                case '\\viber_send':
+                    const viberSendParts = command.trim().split(' ').slice(2);
+                    const viberSendUser = command.trim().split(' ')[1];
+                    const viberSendMessage = viberSendParts.join(' ');
+                    if (!viberSendUser || !viberSendMessage) {
+                        return { message: 'Usage: \\viber_send user message' };
+                    }
+                    const viberSendResult = await this.handleViberCommand('sendMessage', {
+                        receiver: viberSendUser,
+                        message: viberSendMessage
+                    }, userId);
+                    return {
+                        message: viberSendResult.success ? viberSendResult.message : `❌ ${viberSendResult.message}`,
+                        success: viberSendResult.success
+                    };
+
+                case '\\viber_contacts':
+                    const viberContactsResult = await this.handleViberCommand('getContacts', {}, userId);
+                    return {
+                        message: viberContactsResult.success ? viberContactsResult.message : `❌ ${viberContactsResult.message}`,
+                        success: viberContactsResult.success
+                    };
+
+                case '\\viber_messages':
+                    const viberMessagesResult = await this.handleViberCommand('getMessages', {}, userId);
+                    return {
+                        message: viberMessagesResult.success ? viberMessagesResult.message : `❌ ${viberMessagesResult.message}`,
+                        success: viberMessagesResult.success
+                    };
+
+                case '\\viber_account':
+                    const viberAccountResult = await this.handleViberCommand('getAccountInfo', {}, userId);
+                    return {
+                        message: viberAccountResult.success ? viberAccountResult.message : `❌ ${viberAccountResult.message}`,
+                        success: viberAccountResult.success
+                    };
+
+                case '\\viber_online':
+                    const viberOnlineResult = await this.handleViberCommand('getOnlineUsers', {}, userId);
+                    return {
+                        message: viberOnlineResult.success ? viberOnlineResult.message : `❌ ${viberOnlineResult.message}`,
+                        success: viberOnlineResult.success
+                    };
+
+                default:
+                    return {
+                        message: `Unknown command: ${cmd}\\nAvailable commands: \\list, \\cd, \\read, \\write, \\create, \\delete, \\mkdir, \\pwd, \\viber, \\viber_send, \\viber_contacts, \\viber_messages, \\viber_account, \\viber_online`,
+                        error: true
+                    };
+            }
+        } catch (error) {
+            return {
+                message: `Error executing command: ${error.message}`,
+                error: true
+            };
+        }
+    }
+
+    async handleViberCommand(action, params, userId) {
+        const viber = this.core ? this.core.capabilityRegistry.get('viber') : null;
+        
+        if (!viber) {
+            return {
+                message: 'Viber capability is not available.',
+                error: true
+            };
+        }
+
+        try {
+            const result = await viber[action](params, userId);
+            return result;
+        } catch (error) {
+            return {
+                message: `Viber command error: ${error.message}`,
+                error: true
+            };
+        }
     }
 }
 

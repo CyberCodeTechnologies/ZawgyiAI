@@ -1,0 +1,26 @@
+[
+  {
+    "keyword": "hello",
+    "response": "Hello! This is ZawgyiAI auto-reply. How can I help you today?",
+    "enabled": true,
+    "created_at": "2026-02-03T01:36:08.555Z"
+  },
+  {
+    "keyword": "automation",
+    "response": "This is an automated response from ZawgyiAI!",
+    "enabled": true,
+    "created_at": "2026-02-03T01:51:10.888Z"
+  },
+  {
+    "keyword": "help",
+    "response": "🤖 Welcome to ZawgyiAI automated customer service! How can I assist you today?",
+    "enabled": true,
+    "created_at": "2026-02-03T02:03:33.327Z"
+  },
+  {
+    "keyword": "price",
+    "response": "💰 Our pricing plans start from $10/month. Visit our website for complete details!",
+    "enabled": true,
+    "created_at": "2026-02-03T02:03:33.334Z"
+  }
+]

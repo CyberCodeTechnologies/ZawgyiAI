@@ -1,0 +1,103 @@
+{
+  "agents": [
+    {
+      "id": "worker_1"
+    },
+    {
+      "id": "analyzer_1"
+    }
+  ],
+  "checklist": [
+    "system_check",
+    "memory_usage"
+  ],
+  "reporting": "summary",
+  "rollcall_id": "rollcall_1769995380805",
+  "conducted_by": "system",
+  "conducted_at": "2026-02-02T01:23:00.805Z",
+  "agent_status": [
+    {
+      "agent_id": "worker_1",
+      "status": "offline",
+      "last_seen": "2026-02-02T00:26:08.645Z",
+      "health_score": 78,
+      "current_tasks": 2
+    },
+    {
+      "agent_id": "analyzer_1",
+      "status": "busy",
+      "last_seen": "2026-02-02T00:59:17.323Z",
+      "health_score": 96,
+      "current_tasks": 1
+    }
+  ],
+  "checklist_results": [
+    {
+      "checklist_item": "system_check",
+      "agents_compliant": 2,
+      "compliance_rate": 89,
+      "issues": []
+    },
+    {
+      "checklist_item": "memory_usage",
+      "agents_compliant": 1,
+      "compliance_rate": 73,
+      "issues": []
+    }
+  ],
+  "reports": [
+    {
+      "agent_id": "worker_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 16,
+        "average_response_time": 137,
+        "success_rate": 85,
+        "errors": 1
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    },
+    {
+      "agent_id": "analyzer_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 8,
+        "average_response_time": 99,
+        "success_rate": 85,
+        "errors": 0
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "type": "agent_offline",
+      "severity": "high",
+      "description": "Agent undefined is offline"
+    },
+    {
+      "type": "checklist_compliance",
+      "checklist_item": "memory_usage",
+      "severity": "medium",
+      "description": "Low compliance rate: 73%"
+    }
+  ],
+  "summary": {
+    "total_agents": 2,
+    "active_agents": 0,
+    "average_health_score": 87,
+    "total_issues": 2,
+    "overall_status": "needs_attention",
+    "recommendations": [
+      "Monitor offline agents",
+      "Address checklist compliance issues",
+      "Schedule maintenance for low-health agents"
+    ]
+  }
+}

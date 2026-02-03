@@ -1,0 +1,98 @@
+{
+  "agents": [
+    {
+      "id": "worker_1"
+    },
+    {
+      "id": "analyzer_1"
+    }
+  ],
+  "checklist": [
+    "system_check",
+    "memory_usage"
+  ],
+  "reporting": "summary",
+  "rollcall_id": "rollcall_1769996160568",
+  "conducted_by": "system",
+  "conducted_at": "2026-02-02T01:36:00.568Z",
+  "agent_status": [
+    {
+      "agent_id": "worker_1",
+      "status": "idle",
+      "last_seen": "2026-02-02T01:20:35.152Z",
+      "health_score": 98,
+      "current_tasks": 3
+    },
+    {
+      "agent_id": "analyzer_1",
+      "status": "busy",
+      "last_seen": "2026-02-02T00:45:16.613Z",
+      "health_score": 87,
+      "current_tasks": 3
+    }
+  ],
+  "checklist_results": [
+    {
+      "checklist_item": "system_check",
+      "agents_compliant": 2,
+      "compliance_rate": 84,
+      "issues": []
+    },
+    {
+      "checklist_item": "memory_usage",
+      "agents_compliant": 2,
+      "compliance_rate": 79,
+      "issues": []
+    }
+  ],
+  "reports": [
+    {
+      "agent_id": "worker_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 24,
+        "average_response_time": 69,
+        "success_rate": 96,
+        "errors": 2
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    },
+    {
+      "agent_id": "analyzer_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 19,
+        "average_response_time": 128,
+        "success_rate": 86,
+        "errors": 1
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "type": "checklist_compliance",
+      "checklist_item": "memory_usage",
+      "severity": "medium",
+      "description": "Low compliance rate: 79%"
+    }
+  ],
+  "summary": {
+    "total_agents": 2,
+    "active_agents": 0,
+    "average_health_score": 92,
+    "total_issues": 1,
+    "overall_status": "needs_attention",
+    "recommendations": [
+      "Monitor offline agents",
+      "Address checklist compliance issues",
+      "Schedule maintenance for low-health agents"
+    ]
+  }
+}

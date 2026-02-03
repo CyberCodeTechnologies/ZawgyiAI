@@ -1,0 +1,276 @@
+{
+  "timestamp": "2026-02-03T17:00:08.832Z",
+  "duration": 377,
+  "results": {
+    "total": 44,
+    "passed": 11,
+    "failed": 33,
+    "details": [
+      {
+        "name": "Health Check",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.676Z"
+      },
+      {
+        "name": "Platform Status",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.683Z"
+      },
+      {
+        "name": "Capability surveillance",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.689Z"
+      },
+      {
+        "name": "Capability viber",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.693Z"
+      },
+      {
+        "name": "Capability knowledge",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.697Z"
+      },
+      {
+        "name": "Capability file-editor",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.700Z"
+      },
+      {
+        "name": "Capability multi-agent",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.703Z"
+      },
+      {
+        "name": "Capability news",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.708Z"
+      },
+      {
+        "name": "Capability automation-integrations",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.713Z"
+      },
+      {
+        "name": "Capability email",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.716Z"
+      },
+      {
+        "name": "Capability calendar",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.719Z"
+      },
+      {
+        "name": "Capability flight",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.722Z"
+      },
+      {
+        "name": "Capability inbox",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.726Z"
+      },
+      {
+        "name": "API /health",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.730Z"
+      },
+      {
+        "name": "API /status",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.732Z"
+      },
+      {
+        "name": "API /api/capabilities",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.735Z"
+      },
+      {
+        "name": "API /api/messages",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.737Z"
+      },
+      {
+        "name": "API /api/surveillance/status",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.741Z"
+      },
+      {
+        "name": "API /api/news",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.744Z"
+      },
+      {
+        "name": "Viber API /api/viber/status",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.748Z"
+      },
+      {
+        "name": "Viber API /api/viber/account-info",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.751Z"
+      },
+      {
+        "name": "Viber API /api/viber/contacts",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.754Z"
+      },
+      {
+        "name": "Viber API /api/viber/history",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.757Z"
+      },
+      {
+        "name": "Viber Send Message",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.761Z"
+      },
+      {
+        "name": "Surveillance System",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.765Z"
+      },
+      {
+        "name": "Knowledge System",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.769Z"
+      },
+      {
+        "name": "File Creation",
+        "passed": true,
+        "details": "File creation working",
+        "timestamp": "2026-02-03T17:00:08.774Z"
+      },
+      {
+        "name": "File Reading",
+        "passed": true,
+        "details": "File reading working",
+        "timestamp": "2026-02-03T17:00:08.777Z"
+      },
+      {
+        "name": "File Deletion",
+        "passed": true,
+        "details": "File deletion working",
+        "timestamp": "2026-02-03T17:00:08.778Z"
+      },
+      {
+        "name": "Multi-Agent System",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.781Z"
+      },
+      {
+        "name": "Automation System",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.785Z"
+      },
+      {
+        "name": "Web Interface /",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.789Z"
+      },
+      {
+        "name": "Web Interface /viber",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.794Z"
+      },
+      {
+        "name": "Web Interface /automation",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.796Z"
+      },
+      {
+        "name": "Data Directory ./data/memory",
+        "passed": true,
+        "details": "Directory exists",
+        "timestamp": "2026-02-03T17:00:08.798Z"
+      },
+      {
+        "name": "Data Directory ./data/inbox",
+        "passed": true,
+        "details": "Directory exists",
+        "timestamp": "2026-02-03T17:00:08.798Z"
+      },
+      {
+        "name": "Data Directory ./data/viber",
+        "passed": true,
+        "details": "Directory exists",
+        "timestamp": "2026-02-03T17:00:08.799Z"
+      },
+      {
+        "name": "Data Directory ./data/surveillance",
+        "passed": true,
+        "details": "Directory exists",
+        "timestamp": "2026-02-03T17:00:08.799Z"
+      },
+      {
+        "name": "Data Directory ./data/files",
+        "passed": true,
+        "details": "Directory exists",
+        "timestamp": "2026-02-03T17:00:08.800Z"
+      },
+      {
+        "name": "Error Handling 404",
+        "passed": false,
+        "details": "Unexpected error",
+        "timestamp": "2026-02-03T17:00:08.804Z"
+      },
+      {
+        "name": "Error Handling Method",
+        "passed": true,
+        "details": "Proper method rejection",
+        "timestamp": "2026-02-03T17:00:08.808Z"
+      },
+      {
+        "name": "Performance Check",
+        "passed": false,
+        "details": "Request failed with status code 429",
+        "timestamp": "2026-02-03T17:00:08.812Z"
+      },
+      {
+        "name": "Input Validation",
+        "passed": true,
+        "details": "Input properly validated",
+        "timestamp": "2026-02-03T17:00:08.815Z"
+      },
+      {
+        "name": "Rate Limiting",
+        "passed": true,
+        "details": "Rate limiting active",
+        "timestamp": "2026-02-03T17:00:08.818Z"
+      }
+    ]
+  },
+  "successRate": 25
+}

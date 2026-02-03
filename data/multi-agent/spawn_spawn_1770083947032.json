@@ -1,0 +1,172 @@
+{
+  "agent_types": [
+    "worker",
+    "analyzer"
+  ],
+  "tasks": [
+    {
+      "type": "general",
+      "priority": "medium"
+    }
+  ],
+  "coordination": "distributed",
+  "spawn_id": "spawn_1770083947032",
+  "spawned_by": "__1",
+  "spawned_at": "2026-02-03T01:59:07.032Z",
+  "agent_configs": [
+    {
+      "id": "agent_worker_0",
+      "type": "worker",
+      "capabilities": [
+        "task_execution",
+        "data_processing",
+        "reporting"
+      ],
+      "resources": {
+        "cpu": "2 cores",
+        "memory": "4GB",
+        "storage": "10GB"
+      },
+      "configuration": {
+        "max_concurrent_tasks": 5,
+        "timeout": 300000,
+        "retry_attempts": 3,
+        "logging_level": "info",
+        "auto_restart": true
+      }
+    },
+    {
+      "id": "agent_analyzer_1",
+      "type": "analyzer",
+      "capabilities": [
+        "data_analysis",
+        "pattern_recognition",
+        "insights"
+      ],
+      "resources": {
+        "cpu": "4 cores",
+        "memory": "8GB",
+        "storage": "20GB"
+      },
+      "configuration": {
+        "max_concurrent_tasks": 2,
+        "timeout": 300000,
+        "retry_attempts": 3,
+        "logging_level": "info",
+        "auto_restart": true
+      }
+    }
+  ],
+  "agents": [
+    {
+      "id": "agent_worker_0",
+      "type": "worker",
+      "capabilities": [
+        "task_execution",
+        "data_processing",
+        "reporting"
+      ],
+      "resources": {
+        "cpu": "2 cores",
+        "memory": "4GB",
+        "storage": "10GB"
+      },
+      "configuration": {
+        "max_concurrent_tasks": 5,
+        "timeout": 300000,
+        "retry_attempts": 3,
+        "logging_level": "info",
+        "auto_restart": true
+      },
+      "status": "initialized",
+      "pid": "agent_1770083947032_uqwohncpmaj",
+      "initialized_at": "2026-02-03T01:59:07.032Z",
+      "health_score": 100
+    },
+    {
+      "id": "agent_analyzer_1",
+      "type": "analyzer",
+      "capabilities": [
+        "data_analysis",
+        "pattern_recognition",
+        "insights"
+      ],
+      "resources": {
+        "cpu": "4 cores",
+        "memory": "8GB",
+        "storage": "20GB"
+      },
+      "configuration": {
+        "max_concurrent_tasks": 2,
+        "timeout": 300000,
+        "retry_attempts": 3,
+        "logging_level": "info",
+        "auto_restart": true
+      },
+      "status": "initialized",
+      "pid": "agent_1770083947032_ukasjt8i2o",
+      "initialized_at": "2026-02-03T01:59:07.032Z",
+      "health_score": 100
+    }
+  ],
+  "task_distribution": [
+    {
+      "task_id": "task_0",
+      "agent_id": "agent_worker_0",
+      "task_type": "general",
+      "priority": "medium",
+      "estimated_duration": 300,
+      "assigned_at": "2026-02-03T01:59:07.032Z"
+    }
+  ],
+  "coordination_setup": {
+    "mode": "distributed",
+    "coordinator": {
+      "id": "agent_worker_0",
+      "type": "worker",
+      "capabilities": [
+        "task_execution",
+        "data_processing",
+        "reporting"
+      ],
+      "resources": {
+        "cpu": "2 cores",
+        "memory": "4GB",
+        "storage": "10GB"
+      },
+      "configuration": {
+        "max_concurrent_tasks": 5,
+        "timeout": 300000,
+        "retry_attempts": 3,
+        "logging_level": "info",
+        "auto_restart": true
+      },
+      "status": "initialized",
+      "pid": "agent_1770083947032_uqwohncpmaj",
+      "initialized_at": "2026-02-03T01:59:07.032Z",
+      "health_score": 100
+    },
+    "communication_channels": [
+      "message_queue",
+      "shared_memory",
+      "events"
+    ],
+    "synchronization_interval": "5s",
+    "conflict_resolution": "priority_based"
+  },
+  "monitoring": {
+    "monitoring_active": true,
+    "metrics_collected": [
+      "cpu_usage",
+      "memory_usage",
+      "task_completion",
+      "error_rate"
+    ],
+    "dashboard_url": "/agents/monitoring",
+    "alert_thresholds": {
+      "cpu_usage": 80,
+      "memory_usage": 85,
+      "error_rate": 5
+    }
+  }
+}

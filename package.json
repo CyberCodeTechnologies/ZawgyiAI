@@ -1,7 +1,7 @@
 {
   "name": "zawgyiai",
-  "version": "1.1.0",
-  "description": "ZawgyiAI v1.1.0 - Complete Personal AI Assistant with 26 Comprehensive Capabilities. Email, Calendar, Flight, Simulation, Auto SMS Myanmar, Zoho Integration, and Infinite Possibilities.",
+  "version": "1.1.1",
+  "description": "ZawgyiAI is an open-source personal AI assistant that runs locally on your devices. It works with WhatsApp, Telegram, Discord, and more—clearing your inbox, managing your calendar, and automating your workflows while you sleep.",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -26,11 +26,15 @@
   "dependencies": {
     "axios": "^1.6.2",
     "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.6",
+    "csurf": "^1.11.0",
     "dotenv": "^16.6.1",
     "express": "^4.22.1",
+    "express-rate-limit": "^8.2.1",
     "extract-zip": "^2.0.1",
     "fs-extra": "^11.3.3",
     "googleapis": "^128.0.0",
+    "helmet": "^8.1.0",
     "iconv-lite": "^0.7.2",
     "imap": "^0.8.19",
     "imap-simple": "^5.1.0",

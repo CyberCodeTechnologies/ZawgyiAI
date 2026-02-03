@@ -1,196 +1,205 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { ZawgyiCapability } = require('../core/zawgyi-capability');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs-extra');
 const path = require('path');
 const { WhatsAppConfig, validateConfig, createWhatsAppClient } = require('../../whatsapp-config');
 
-class WhatsAppCapability {
-    constructor() {
-        this.client = null;
+class WhatsAppCapability extends ZawgyiCapability {
+    constructor(gateway = null) {
+        super('whatsapp', 'WhatsApp Automation - Send and receive messages via WhatsApp');
+
+        this.gateway = gateway;
+        this.standaloneClient = null;
         this.isReady = false;
-        this.messageHandler = null;
         this.config = WhatsAppConfig;
-        
+
         // Validate configuration
         if (!validateConfig()) {
-            throw new Error('Invalid WhatsApp configuration');
+            console.warn('⚠️ WhatsApp configuration validation failed or using defaults');
         }
-        
+
         // Ensure directories exist
         fs.ensureDirSync(this.config.session.dataPath);
         fs.ensureDirSync(this.config.media.downloadPath);
+
+        this.setupActions();
+    }
+
+    setupActions() {
+        this.addAction('send_message', this.sendMessageAction.bind(this), {
+            description: 'Send a text message to a WhatsApp contact',
+            parameters: ['to', 'message']
+        });
+
+        this.addAction('send_media', this.sendMediaAction.bind(this), {
+            description: 'Send media (image, video, etc.) to a WhatsApp contact',
+            parameters: ['to', 'mediaPath', 'caption']
+        });
+
+        this.addAction('get_contacts', this.getContacts.bind(this), {
+            description: 'Get list of WhatsApp contacts',
+            parameters: []
+        });
+
+        this.addAction('get_chats', this.getChats.bind(this), {
+            description: 'Get list of active WhatsApp chats',
+            parameters: []
+        });
+
+        this.addAction('status', this.getStatusAction.bind(this), {
+            description: 'Get current WhatsApp connection status',
+            parameters: []
+        });
+    }
+
+    /**
+     * Internal helper to get the active WhatsApp client.
+     * Prioritizes the client from the gateway if available.
+     */
+    getActiveClient() {
+        if (this.gateway) {
+            const platform = this.gateway.platforms.get('whatsapp');
+            if (platform && platform.client) {
+                return platform.client;
+            }
+        }
+        return this.standaloneClient;
+    }
+
+    checkReady() {
+        const client = this.getActiveClient();
+        if (!client) {
+            throw new Error('WhatsApp client is not initialized. Please ensure the WhatsApp platform is started in the gateway.');
+        }
+        return client;
     }
 
     async initialize() {
-        try {
-            console.log('📱 Initializing WhatsApp capability...');
-            
-            // Create client using configuration
-            this.client = createWhatsAppClient();
-            
-            this.setupEventListeners();
-            await this.client.initialize();
-            
-            console.log('✅ WhatsApp initialization started');
+        if (this.getActiveClient()) {
+            console.log('📱 WhatsApp capability using existing gateway client');
+            this.isReady = true;
             return true;
+        }
 
+        try {
+            console.log('📱 Initializing standalone WhatsApp capability...');
+            this.standaloneClient = createWhatsAppClient();
+            this.setupEventListeners(this.standaloneClient);
+            await this.standaloneClient.initialize();
+            return true;
         } catch (error) {
-            console.error('❌ WhatsApp initialization failed:', error.message);
-            
-            if (error.message.includes('ERR_NAME_NOT_RESOLVED')) {
-                console.log('💡 Network connectivity issue detected');
-                console.log('Please check your internet connection or try using a VPN');
-            }
-            
+            console.error('❌ Standalone WhatsApp initialization failed:', error.message);
             throw error;
         }
     }
 
-    setupEventListeners() {
-        this.client.on('qr', (qr) => {
+    setupEventListeners(client) {
+        client.on('qr', (qr) => {
             console.log('📸 WhatsApp QR Code received!');
-            console.log('Please scan this QR code with your WhatsApp mobile app:');
             qrcode.generate(qr, { small: true });
         });
 
-        this.client.on('ready', () => {
+        client.on('ready', () => {
             console.log('✅ WhatsApp client is ready!');
             this.isReady = true;
         });
 
-        this.client.on('auth_failure', (msg) => {
+        client.on('auth_failure', (msg) => {
             console.error('❌ WhatsApp authentication failure:', msg);
             this.isReady = false;
         });
 
-        this.client.on('disconnected', (reason) => {
+        client.on('disconnected', (reason) => {
             console.log('📱 WhatsApp client disconnected:', reason);
             this.isReady = false;
         });
-
-        this.client.on('loading_screen', (percent, message) => {
-            console.log(`📱 WhatsApp loading: ${percent}% - ${message}`);
-        });
-
-        this.client.on('message', (message) => {
-            this.handleIncomingMessage(message);
-        });
     }
 
-    async handleIncomingMessage(message) {
-        try {
-            const from = message.from;
-            const body = message.body;
-            const isGroup = message.from.endsWith('@g.us');
-            
-            console.log(`📨 Received WhatsApp message from ${from}: ${body}`);
-            
-            if (this.messageHandler) {
-                await this.messageHandler({
-                    platform: 'whatsapp',
-                    from: from,
-                    body: body,
-                    isGroup: isGroup,
-                    timestamp: new Date(),
-                    message: message
-                });
-            }
-        } catch (error) {
-            console.error('❌ Error handling WhatsApp message:', error);
+    async sendMessageAction(params, userId) {
+        const { to, message } = params;
+        if (!to || !message) throw new Error('Recipient and message are required');
+
+        const client = this.checkReady();
+
+        let target = to;
+        if (!target.includes('@')) {
+            target = `${target}@c.us`;
         }
+
+        console.log(`📤 Sending WhatsApp message to ${target}: ${message}`);
+        const result = await client.sendMessage(target, message);
+
+        if (this.gateway) {
+            this.gateway.addMessageToHistory('whatsapp', 'Zawgyi AI', String(message), 'outgoing', 'Zawgyi AI');
+        }
+
+        return {
+            success: true,
+            recipient: target,
+            message_id: result.id._serialized,
+            timestamp: new Date().toISOString()
+        };
     }
 
-    async sendMessage(to, message) {
-        if (!this.isReady || !this.client) {
-            throw new Error('WhatsApp client is not ready');
+    async sendMediaAction(params, userId) {
+        const { to, mediaPath, caption = '' } = params;
+        if (!to || !mediaPath) throw new Error('Recipient and mediaPath are required');
+
+        const client = this.checkReady();
+        const { MessageMedia } = require('whatsapp-web.js');
+
+        let target = to;
+        if (!target.includes('@')) {
+            target = `${target}@c.us`;
         }
 
-        try {
-            console.log(`📤 Sending WhatsApp message to ${to}: ${message}`);
-            
-            if (!to.includes('@')) {
-                to = `${to}@c.us`;
-            }
+        const media = MessageMedia.fromFilePath(mediaPath);
+        const result = await client.sendMessage(target, media, { caption });
 
-            const result = await this.client.sendMessage(to, message);
-            console.log('✅ WhatsApp message sent successfully');
-            return result;
-        } catch (error) {
-            console.error('❌ Failed to send WhatsApp message:', error);
-            throw error;
-        }
-    }
-
-    async sendMedia(to, mediaPath, caption = '') {
-        if (!this.isReady || !this.client) {
-            throw new Error('WhatsApp client is not ready');
-        }
-
-        try {
-            const media = require('whatsapp-web.js').MessageMedia.fromFilePath(mediaPath);
-            const result = await this.client.sendMessage(to, media, { caption });
-            console.log('✅ WhatsApp media sent successfully');
-            return result;
-        } catch (error) {
-            console.error('❌ Failed to send WhatsApp media:', error);
-            throw error;
-        }
+        return {
+            success: true,
+            recipient: target,
+            caption: caption,
+            message_id: result.id._serialized,
+            timestamp: new Date().toISOString()
+        };
     }
 
     async getContacts() {
-        if (!this.isReady || !this.client) {
-            throw new Error('WhatsApp client is not ready');
-        }
-
-        try {
-            const contacts = await this.client.getContacts();
-            return contacts.filter(contact => contact.isMyContact);
-        } catch (error) {
-            console.error('❌ Failed to get WhatsApp contacts:', error);
-            throw error;
-        }
+        const client = this.checkReady();
+        const contacts = await client.getContacts();
+        return contacts.filter(contact => contact.isMyContact).map(c => ({
+            id: c.id._serialized,
+            name: c.name || c.pushname,
+            number: c.number
+        }));
     }
 
     async getChats() {
-        if (!this.isReady || !this.client) {
-            throw new Error('WhatsApp client is not ready');
-        }
-
-        try {
-            const chats = await this.client.getChats();
-            return chats;
-        } catch (error) {
-            console.error('❌ Failed to get WhatsApp chats:', error);
-            throw error;
-        }
+        const client = this.checkReady();
+        const chats = await client.getChats();
+        return chats.map(c => ({
+            id: c.id._serialized,
+            name: c.name,
+            unreadCount: c.unreadCount,
+            lastMessage: c.lastMessage ? c.lastMessage.body : null
+        }));
     }
 
-    setMessageHandler(handler) {
-        this.messageHandler = handler;
-    }
-
-    getStatus() {
+    async getStatusAction() {
+        const client = this.getActiveClient();
         return {
-            isReady: this.isReady,
-            phoneNumber: this.config.phoneNumber,
-            hasClient: !!this.client,
-            sessionId: this.config.session.clientId,
-            config: {
-                headless: this.config.puppeteer.headless,
-                rateLimit: this.config.messaging.rateLimit
-            }
+            isReady: this.isReady || (!!client),
+            hasClient: !!client,
+            fromGateway: !!(this.gateway && this.gateway.platforms.get('whatsapp')?.client),
+            sessionId: this.config.session.clientId
         };
     }
 
     async disconnect() {
-        if (this.client) {
-            try {
-                await this.client.destroy();
-                console.log('📱 WhatsApp client disconnected');
-                this.isReady = false;
-            } catch (error) {
-                console.error('❌ Error disconnecting WhatsApp:', error);
-            }
+        if (this.standaloneClient) {
+            await this.standaloneClient.destroy();
+            this.isReady = false;
         }
     }
 }

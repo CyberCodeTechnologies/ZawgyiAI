@@ -1,0 +1,11 @@
+[
+  {
+    "id": "scheduled_1770082577652",
+    "receiver": "user1",
+    "message": "Scheduled message from ZawgyiAI!",
+    "schedule_time": "2026-02-03T01:37:00.000Z",
+    "created_at": "2026-02-03T01:36:17.652Z",
+    "status": "sent",
+    "sent_at": "2026-02-03T01:37:01.629Z"
+  }
+]

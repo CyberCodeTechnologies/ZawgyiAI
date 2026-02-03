@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ZawgyiAI Camera Capture</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+        }
+        #status {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+        .loading {
+            color: #06b6d4;
+        }
+        .error {
+            color: #ef4444;
+        }
+        .success {
+            color: #4ade80;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="status" class="loading">📸 Initializing camera...</div>
+    <video id="video" width="640" height="480" autoplay style="display:none;"></video>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        
+        async function capture() {
+            try {
+                statusDiv.textContent = '📸 Requesting camera access...';
+                statusDiv.className = 'loading';
+                
+                // First, check if camera devices are available
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+                console.log('Available video devices:', videoDevices);
+                
+                if (videoDevices.length === 0) {
+                    throw new Error('No camera devices found on this system');
+                }
+                
+                let stream;
+                let deviceUsed = null;
+                
+                // Try each available camera device
+                for (const device of videoDevices) {
+                    try {
+                        console.log(`Trying camera: ${device.label || device.deviceId}`);
+                        
+                        const constraints = {
+                            video: {
+                                deviceId: device.deviceId ? { exact: device.deviceId } : undefined,
+                                width: { ideal: 1280, max: 1920 },
+                                height: { ideal: 720, max: 1080 },
+                                facingMode: 'user'
+                            }
+                        };
+                        
+                        stream = await navigator.mediaDevices.getUserMedia(constraints);
+                        deviceUsed = device;
+                        console.log(`Successfully accessed camera: ${device.label || device.deviceId}`);
+                        break;
+                        
+                    } catch (deviceErr) {
+                        console.warn(`Failed to access camera ${device.label || device.deviceId}:`, deviceErr.message);
+                        continue;
+                    }
+                }
+                
+                // If no specific device worked, try generic camera access
+                if (!stream) {
+                    console.log('Trying generic camera access...');
+                    stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: {
+                            width: { ideal: 640 },
+                            height: { ideal: 480 }
+                        }
+                    });
+                }
+                
+                statusDiv.textContent = `📸 Camera ready: ${deviceUsed ? deviceUsed.label || deviceUsed.deviceId : 'Default camera'}`;
+                
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+
+                // Wait for video to be ready and playing
+                await new Promise((resolve, reject) => {
+                    video.onloadedmetadata = () => {
+                        video.play().then(() => {
+                            // Wait a bit for video to actually start playing
+                            setTimeout(() => {
+                                if (video.readyState >= 2) { // HAVE_CURRENT_DATA
+                                    resolve();
+                                } else {
+                                    reject(new Error('Video failed to start playing'));
+                                }
+                            }, 2000);
+                        }).catch(reject);
+                    };
+                    
+                    video.onerror = () => reject(new Error('Video element error'));
+                });
+
+                // Verify video is actually playing and has dimensions
+                if (video.videoWidth === 0 || video.videoHeight === 0) {
+                    throw new Error('Video has no dimensions - camera may be blocked');
+                }
+                
+                console.log(`Video dimensions: ${video.videoWidth}x${video.videoHeight}`);
+                
+                // Wait for camera to stabilize
+                statusDiv.textContent = '📸 Stabilizing camera...';
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                statusDiv.textContent = '📸 Capturing image...';
+                const canvas = document.getElementById('canvas');
+                const context = canvas.getContext('2d');
+                
+                // Set canvas size to match video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // Draw the video frame
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Convert to JPEG
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+                // Stop all camera tracks
+                stream.getTracks().forEach(track => {
+                    track.stop();
+                    console.log('Camera track stopped');
+                });
+
+                statusDiv.textContent = '📸 Uploading image...';
+                statusDiv.className = 'success';
+
+                // Send back to server
+                const response = await fetch('/api/surveillance/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: dataUrl })
+                });
+
+                if (response.ok) {
+                    statusDiv.textContent = '✅ Capture successful!';
+                    setTimeout(() => window.close(), 1000);
+                } else {
+                    throw new Error('Upload failed');
+                }
+                
+            } catch (err) {
+                console.error('Camera error:', err);
+                statusDiv.textContent = `❌ Camera Error: ${err.message}`;
+                statusDiv.className = 'error';
+                
+                // Send error back to server
+                try {
+                    await fetch('/api/surveillance/error', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ error: err.message })
+                    });
+                } catch (uploadErr) {
+                    console.error('Failed to send error:', uploadErr);
+                }
+                
+                // Wait longer before closing to show the error
+                setTimeout(() => window.close(), 8000);
+            }
+        }
+        
+        // Start capture immediately
+        capture();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+{
+  "agents": [
+    {
+      "id": "worker_1"
+    },
+    {
+      "id": "analyzer_1"
+    }
+  ],
+  "checklist": [
+    "system_check",
+    "memory_usage"
+  ],
+  "reporting": "summary",
+  "rollcall_id": "rollcall_1769996040777",
+  "conducted_by": "system",
+  "conducted_at": "2026-02-02T01:34:00.777Z",
+  "agent_status": [
+    {
+      "agent_id": "worker_1",
+      "status": "idle",
+      "last_seen": "2026-02-02T00:47:59.600Z",
+      "health_score": 98,
+      "current_tasks": 1
+    },
+    {
+      "agent_id": "analyzer_1",
+      "status": "busy",
+      "last_seen": "2026-02-02T01:29:54.792Z",
+      "health_score": 71,
+      "current_tasks": 0
+    }
+  ],
+  "checklist_results": [
+    {
+      "checklist_item": "system_check",
+      "agents_compliant": 1,
+      "compliance_rate": 88,
+      "issues": []
+    },
+    {
+      "checklist_item": "memory_usage",
+      "agents_compliant": 2,
+      "compliance_rate": 99,
+      "issues": []
+    }
+  ],
+  "reports": [
+    {
+      "agent_id": "worker_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 5,
+        "average_response_time": 52,
+        "success_rate": 90,
+        "errors": 2
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    },
+    {
+      "agent_id": "analyzer_1",
+      "report_type": "summary",
+      "metrics": {
+        "tasks_completed": 18,
+        "average_response_time": 67,
+        "success_rate": 90,
+        "errors": 2
+      },
+      "insights": [
+        "Performance within expected range",
+        "No critical issues detected"
+      ]
+    }
+  ],
+  "issues": [],
+  "summary": {
+    "total_agents": 2,
+    "active_agents": 0,
+    "average_health_score": 84,
+    "total_issues": 0,
+    "overall_status": "healthy",
+    "recommendations": [
+      "Monitor offline agents",
+      "Address checklist compliance issues",
+      "Schedule maintenance for low-health agents"
+    ]
+  }
+}

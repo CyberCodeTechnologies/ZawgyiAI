@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZawgyiAI Automation Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #7c3aed;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .automation-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #7c3aed;
+            margin-bottom: 5px;
+        }
+
+        .status-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .automation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .automation-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .automation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .automation-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .automation-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .automation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .automation-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-running {
+            background: #10b981;
+            color: white;
+            animation: blink 1s infinite;
+        }
+
+        .status-idle {
+            background: #6b7280;
+            color: white;
+        }
+
+        .status-success {
+            background: #059669;
+            color: white;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+
+        .automation-content {
+            margin-bottom: 15px;
+        }
+
+        .automation-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .automation-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .activity-log {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .activity-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #7c3aed;
+            background: #f9fafb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .activity-item.success {
+            border-left-color: #10b981;
+        }
+
+        .activity-item.error {
+            border-left-color: #ef4444;
+        }
+
+        .activity-time {
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .activity-message {
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            transition: width 0.3s ease;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .automation-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <div class="automation-icon">🤖</div>
+                ZawgyiAI Automation Dashboard
+            </h1>
+            <p>Complete automation control and monitoring system</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-card">
+                <div class="status-value" id="total-tasks">0</div>
+                <div class="status-label">Total Tasks</div>
+            </div>
+            <div class="status-card">
+                <div class="status-value" id="success-rate">100%</div>
+                <div class="status-label">Success Rate</div>
+            </div>
+            <div class="status-card">
+                <div class="status-value" id="avg-duration">0ms</div>
+                <div class="status-label">Avg Duration</div>
+            </div>
+            <div class="status-card">
+                <div class="status-value" id="active-automations">0</div>
+                <div class="status-label">Active</div>
+            </div>
+        </div>
+
+        <div class="automation-grid">
+            <!-- Knowledge Automation -->
+            <div class="automation-card">
+                <div class="automation-header">
+                    <div class="automation-title">
+                        <div class="automation-icon" style="background: linear-gradient(45deg, #3b82f6, #60a5fa);">🧠</div>
+                        Knowledge & Chat
+                    </div>
+                    <div class="automation-status status-idle">Idle</div>
+                </div>
+                <div class="automation-content">
+                    <div class="automation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks:</span>
+                            <span class="stat-value" id="knowledge-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success:</span>
+                            <span class="stat-value" id="knowledge-success">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="knowledge-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAutomation('knowledge')">Run Now</button>
+                    <button class="btn btn-success" onclick="startContinuous('knowledge')">Start Continuous</button>
+                    <button class="btn btn-danger" onclick="stopContinuous('knowledge')">Stop</button>
+                </div>
+            </div>
+
+            <!-- File System Automation -->
+            <div class="automation-card">
+                <div class="automation-header">
+                    <div class="automation-title">
+                        <div class="automation-icon" style="background: linear-gradient(45deg, #059669, #10b981);">📁</div>
+                        File System
+                    </div>
+                    <div class="automation-status status-idle">Idle</div>
+                </div>
+                <div class="automation-content">
+                    <div class="automation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks:</span>
+                            <span class="stat-value" id="file-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success:</span>
+                            <span class="stat-value" id="file-success">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="file-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAutomation('file')">Run Now</button>
+                    <button class="btn btn-success" onclick="startContinuous('file')">Start Continuous</button>
+                    <button class="btn btn-danger" onclick="stopContinuous('file')">Stop</button>
+                </div>
+            </div>
+
+            <!-- Viber Automation -->
+            <div class="automation-card">
+                <div class="automation-header">
+                    <div class="automation-title">
+                        <div class="automation-icon" style="background: linear-gradient(45deg, #7c3aed, #a855f7);">📱</div>
+                        Viber Messaging
+                    </div>
+                    <div class="automation-status status-idle">Idle</div>
+                </div>
+                <div class="automation-content">
+                    <div class="automation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks:</span>
+                            <span class="stat-value" id="viber-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success:</span>
+                            <span class="stat-value" id="viber-success">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="viber-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAutomation('viber')">Run Now</button>
+                    <button class="btn btn-success" onclick="startContinuous('viber')">Start Continuous</button>
+                    <button class="btn btn-danger" onclick="stopContinuous('viber')">Stop</button>
+                </div>
+            </div>
+
+            <!-- Surveillance Automation -->
+            <div class="automation-card">
+                <div class="automation-header">
+                    <div class="automation-title">
+                        <div class="automation-icon" style="background: linear-gradient(45deg, #dc2626, #ef4444);">📸</div>
+                        Surveillance
+                    </div>
+                    <div class="automation-status status-idle">Idle</div>
+                </div>
+                <div class="automation-content">
+                    <div class="automation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks:</span>
+                            <span class="stat-value" id="surveillance-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success:</span>
+                            <span class="stat-value" id="surveillance-success">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="surveillance-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAutomation('surveillance')">Run Now</button>
+                    <button class="btn btn-success" onclick="startContinuous('surveillance')">Start Continuous</button>
+                    <button class="btn btn-danger" onclick="stopContinuous('surveillance')">Stop</button>
+                </div>
+            </div>
+
+            <!-- News Automation -->
+            <div class="automation-card">
+                <div class="automation-header">
+                    <div class="automation-title">
+                        <div class="automation-icon" style="background: linear-gradient(45deg, #f59e0b, #fbbf24);">📰</div>
+                        News System
+                    </div>
+                    <div class="automation-status status-idle">Idle</div>
+                </div>
+                <div class="automation-content">
+                    <div class="automation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks:</span>
+                            <span class="stat-value" id="news-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success:</span>
+                            <span class="stat-value" id="news-success">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="news-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAutomation('news')">Run Now</button>
+                    <button class="btn btn-success" onclick="startContinuous('news')">Start Continuous</button>
+                    <button class="btn btn-danger" onclick="stopContinuous('news')">Stop</button>
+                </div>
+            </div>
+
+            <!-- Multi-Agent Automation -->
+            <div class="automation-card">
+                <div class="automation-header">
+                    <div class="automation-title">
+                        <div class="automation-icon" style="background: linear-gradient(45deg, #8b5cf6, #a78bfa);">🤖</div>
+                        Multi-Agent
+                    </div>
+                    <div class="automation-status status-idle">Idle</div>
+                </div>
+                <div class="automation-content">
+                    <div class="automation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks:</span>
+                            <span class="stat-value" id="agent-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success:</span>
+                            <span class="stat-value" id="agent-success">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="agent-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAutomation('agent')">Run Now</button>
+                    <button class="btn btn-success" onclick="startContinuous('agent')">Start Continuous</button>
+                    <button class="btn btn-danger" onclick="stopContinuous('agent')">Stop</button>
+                </div>
+            </div>
+
+            <!-- System Automation -->
+            <div class="automation-card">
+                <div class="automation-header">
+                    <div class="automation-title">
+                        <div class="automation-icon" style="background: linear-gradient(45deg, #6b7280, #9ca3af);">🔧</div>
+                        System Health
+                    </div>
+                    <div class="automation-status status-idle">Idle</div>
+                </div>
+                <div class="automation-content">
+                    <div class="automation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Tasks:</span>
+                            <span class="stat-value" id="system-tasks">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Success:</span>
+                            <span class="stat-value" id="system-success">0%</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="system-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAutomation('system')">Run Now</button>
+                    <button class="btn btn-success" onclick="startContinuous('system')">Start Continuous</button>
+                    <button class="btn btn-danger" onclick="stopContinuous('system')">Stop</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Master Controls -->
+        <div class="automation-card full-width">
+            <div class="automation-header">
+                <div class="automation-title">
+                    <div class="automation-icon" style="background: linear-gradient(45deg, #dc2626, #ef4444);">🎮</div>
+                    Master Controls
+                </div>
+                <div class="automation-status status-idle">Idle</div>
+            </div>
+            <div class="automation-content">
+                <div class="automation-controls">
+                    <button class="btn btn-primary" onclick="runAllAutomations()">Run All Automations</button>
+                    <button class="btn btn-success" onclick="startAllContinuous()">Start All Continuous</button>
+                    <button class="btn btn-danger" onclick="stopAllContinuous()">Stop All</button>
+                    <button class="btn" onclick="clearResults()">Clear Results</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="activity-log">
+            <div class="activity-header">
+                <span>📋 Activity Log</span>
+                <button class="btn btn-primary" onclick="clearLog()">Clear Log</button>
+            </div>
+            <div id="activity-log">
+                <div class="activity-item">
+                    <div class="activity-time">System Ready</div>
+                    <div class="activity-message">Automation dashboard loaded successfully</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseURL = 'http://localhost:3005';
+        let continuousIntervals = {};
+        let automationResults = {};
+        let totalTasks = 0;
+        let successfulTasks = 0;
+
+        // Initialize automation results
+        const automationTypes = ['knowledge', 'file', 'viber', 'surveillance', 'news', 'agent', 'system'];
+        automationTypes.forEach(type => {
+            automationResults[type] = {
+                tasks: 0,
+                success: 0,
+                failed: 0,
+                duration: 0,
+                isRunning: false,
+                interval: null
+            };
+        });
+
+        async function runAutomation(type) {
+            const startTime = Date.now();
+            const statusEl = document.querySelector(`#${type}-automation .automation-status`);
+            const progressEl = document.getElementById(`${type}-progress`);
+            
+            try {
+                statusEl.className = 'automation-status status-running';
+                statusEl.textContent = 'Running';
+                
+                let response;
+                switch(type) {
+                    case 'knowledge':
+                        response = await runKnowledgeAutomation();
+                        break;
+                    case 'file':
+                        response = await runFileAutomation();
+                        break;
+                    case 'viber':
+                        response = await runViberAutomation();
+                        break;
+                    case 'surveillance':
+                        response = await runSurveillanceAutomation();
+                        break;
+                    case 'news':
+                        response = await runNewsAutomation();
+                        break;
+                    case 'agent':
+                        response = await runAgentAutomation();
+                        break;
+                    case 'system':
+                        response = await runSystemAutomation();
+                        break;
+                }
+                
+                const duration = Date.now() - startTime;
+                updateAutomationResult(type, true, duration);
+                
+                statusEl.className = 'automation-status status-success';
+                statusEl.textContent = 'Success';
+                progressEl.style.width = '100%';
+                
+                addActivityLog(`${type} automation completed successfully`, 'success');
+            } catch (error) {
+                const duration = Date.now() - startTime;
+                updateAutomationResult(type, false, duration);
+                
+                statusEl.className = 'automation-status status-idle';
+                statusEl.textContent = 'Failed';
+                progressEl.style.width = '0%';
+                
+                addActivityLog(`${type} automation failed: ${error.message}`, 'error');
+            }
+            
+            updateGlobalStats();
+        }
+
+        async function runKnowledgeAutomation() {
+            const responses = [];
+            
+            // Time check
+            const timeResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'what time is it', user_id: 'automation' })
+            });
+            responses.push(timeResponse.data.response);
+            
+            // Date check
+            const dateResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'what is today', user_id: 'automation' })
+            });
+            responses.push(dateResponse.data.response);
+            
+            // Math calculation
+            const mathResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'calculate 25 * 4', user_id: 'automation' })
+            });
+            responses.push(mathResponse.data.response);
+            
+            return responses;
+        }
+
+        async function runFileAutomation() {
+            const responses = [];
+            
+            // List directory
+            const listResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: '\\list', user_id: 'automation' })
+            });
+            responses.push(listResponse.data.response);
+            
+            // Create file
+            const createResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: '\\create automation_test.txt', user_id: 'automation' })
+            });
+            responses.push(createResponse.data.response);
+            
+            return responses;
+        }
+
+        async function runViberAutomation() {
+            const responses = [];
+            
+            // Get contacts
+            const contactsResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: '\\viber_contacts', user_id: 'automation' })
+            });
+            responses.push(contactsResponse.data.response);
+            
+            // Send message
+            const messageResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: '\\viber_send user1 Automated message!', user_id: 'automation' })
+            });
+            responses.push(messageResponse.data.response);
+            
+            // Broadcast
+            const broadcastResponse = await fetch(`${baseURL}/api/viber/broadcast`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'Automated broadcast!', recipients: ['user1', 'user2'] })
+            });
+            responses.push(broadcastResponse.data.message);
+            
+            return responses;
+        }
+
+        async function runSurveillanceAutomation() {
+            const responses = [];
+            
+            // Recording status
+            const recordingResponse = await fetch(`${baseURL}/api/surveillance/recording/status`);
+            responses.push(`Recording: ${recordingResponse.data.isRecording ? 'Active' : 'Inactive'}`);
+            
+            return responses;
+        }
+
+        async function runNewsAutomation() {
+            const responses = [];
+            
+            // Latest news
+            const latestResponse = await fetch(`${baseURL}/api/news?limit=5`);
+            responses.push(`Fetched ${latestResponse.data.data ? latestResponse.data.data.length : 0} news items`);
+            
+            // Tech news
+            const techResponse = await fetch(`${baseURL}/api/news?category=tech&limit=3`);
+            responses.push(`Fetched ${techResponse.data.data ? techResponse.data.data.length : 0} tech news items`);
+            
+            return responses;
+        }
+
+        async function runAgentAutomation() {
+            const responses = [];
+            
+            // Spawn agents
+            const spawnResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'create agent', user_id: 'automation' })
+            });
+            responses.push(spawnResponse.data.response);
+            
+            // Parallel processing
+            const parallelResponse = await fetch(`${baseURL}/process`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: 'analyze data with multiple agents', user_id: 'automation' })
+            });
+            responses.push(parallelResponse.data.response);
+            
+            return responses;
+        }
+
+        async function runSystemAutomation() {
+            const responses = [];
+            
+            // Health check
+            const healthResponse = await fetch(`${baseURL}/health`);
+            responses.push(healthResponse.data.status);
+            
+            // System status
+            const statusResponse = await fetch(`${baseURL}/status`);
+            responses.push(`${statusResponse.data.core.capabilities.length} capabilities active`);
+            
+            // Message history
+            const messagesResponse = await fetch(`${baseURL}/api/messages`);
+            responses.push(`${messagesResponse.data.messages.length} messages in history`);
+            
+            return responses;
+        }
+
+        function updateAutomationResult(type, success, duration) {
+            const result = automationResults[type];
+            result.tasks++;
+            result.duration += duration;
+            
+            if (success) {
+                result.success++;
+            } else {
+                result.failed++;
+            }
+            
+            // Update UI
+            document.getElementById(`${type}-tasks`).textContent = result.tasks;
+            document.getElementById(`${type}-success`).textContent = `${((result.success / result.tasks) * 100).toFixed(1)}%`;
+            document.getElementById(`${type}-progress`).style.width = `${(result.success / result.tasks) * 100}%`;
+        }
+
+        function updateGlobalStats() {
+            totalTasks = 0;
+            successfulTasks = 0;
+            let totalDuration = 0;
+            let activeCount = 0;
+            
+            Object.values(automationResults).forEach(result => {
+                totalTasks += result.tasks;
+                successfulTasks += result.success;
+                totalDuration += result.duration;
+                if (result.isRunning) activeCount++;
+            });
+            
+            document.getElementById('total-tasks').textContent = totalTasks;
+            document.getElementById('success-rate').textContent = totalTasks > 0 ? `${((successfulTasks / totalTasks) * 100).toFixed(1)}%` : '100%';
+            document.getElementById('avg-duration').textContent = totalTasks > 0 ? `${(totalDuration / totalTasks).toFixed(0)}ms` : '0ms';
+            document.getElementById('active-automations').textContent = activeCount;
+        }
+
+        function startContinuous(type) {
+            if (automationResults[type].isRunning) return;
+            
+            automationResults[type].isRunning = true;
+            const statusEl = document.querySelector(`#${type}-automation .automation-status`);
+            statusEl.className = 'automation-status status-running';
+            statusEl.textContent = 'Running';
+            
+            automationResults[type].interval = setInterval(() => {
+                runAutomation(type);
+            }, 10000); // Run every 10 seconds
+            
+            addActivityLog(`${type} continuous automation started`, 'success');
+        }
+
+        function stopContinuous(type) {
+            if (!automationResults[type].isRunning) return;
+            
+            automationResults[type].isRunning = false;
+            clearInterval(automationResults[type].interval);
+            
+            const statusEl = document.querySelector(`#${type}-automation .automation-status`);
+            statusEl.className = 'automation-status status-idle';
+            statusEl.textContent = 'Idle';
+            
+            addActivityLog(`${type} continuous automation stopped`, 'success');
+        }
+
+        function runAllAutomations() {
+            automationTypes.forEach(type => {
+                if (!automationResults[type].isRunning) {
+                    runAutomation(type);
+                }
+            });
+        }
+
+        function startAllContinuous() {
+            automationTypes.forEach(type => {
+                startContinuous(type);
+            });
+        }
+
+        function stopAllContinuous() {
+            automationTypes.forEach(type => {
+                stopContinuous(type);
+            });
+        }
+
+        function clearResults() {
+            automationTypes.forEach(type => {
+                automationResults[type] = {
+                    tasks: 0,
+                    success: 0,
+                    failed: 0,
+                    duration: 0,
+                    isRunning: false,
+                    interval: null
+                };
+                
+                document.getElementById(`${type}-tasks`).textContent = '0';
+                document.getElementById(`${type}-success`).textContent = '0%';
+                document.getElementById(`${type}-progress`).style.width = '0%';
+                
+                const statusEl = document.querySelector(`#${type}-automation .automation-status`);
+                statusEl.className = 'automation-status status-idle';
+                statusEl.textContent = 'Idle';
+            });
+            
+            updateGlobalStats();
+            clearLog();
+        }
+
+        function addActivityLog(message, type = 'info') {
+            const logContainer = document.getElementById('activity-log');
+            const logItem = document.createElement('div');
+            logItem.className = `activity-item ${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            logItem.innerHTML = `
+                <div class="activity-time">${time}</div>
+                <div class="activity-message">${message}</div>
+            `;
+            
+            logContainer.insertBefore(logItem, logContainer.firstChild);
+            
+            // Keep only last 50 entries
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        function clearLog() {
+            const logContainer = document.getElementById('activity-log');
+            logContainer.innerHTML = `
+                <div class="activity-item">
+                    <div class="activity-time">${new Date().toLocaleTimeString()}</div>
+                    <div class="activity-message">Activity log cleared</div>
+                </div>
+            `;
+        }
+
+        // Initialize dashboard
+        updateGlobalStats();
+    </script>
+</body>
+</html>

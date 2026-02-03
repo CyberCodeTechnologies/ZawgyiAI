@@ -1,0 +1,14 @@
+[
+  {
+    "id": "user1",
+    "name": "John Doe",
+    "phone": "+1234567890",
+    "status": "online"
+  },
+  {
+    "id": "user2",
+    "name": "Jane Smith",
+    "phone": "+0987654321",
+    "status": "offline"
+  }
+]
