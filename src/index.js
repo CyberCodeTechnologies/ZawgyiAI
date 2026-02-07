@@ -15,7 +15,8 @@ class ZawgyiAI {
         // Initialize Zawgyi AI Framework
         this.core = new ZawgyiCore();
         this.gateway = new ZawgyiGateway(this.core);
-
+        
+        // Setup middleware, routes, and capabilities
         this.setupMiddleware();
         this.setupRoutes();
         this.initializeCapabilities();
@@ -209,7 +210,32 @@ class ZawgyiAI {
             
             console.log('✅ Data directories ensured');
             
-            // Initialize basic capabilities
+            // Load capabilities from the capabilities directory
+            const capabilitiesDir = path.join(__dirname, 'capabilities');
+            const capabilityFiles = await fs.readdir(capabilitiesDir);
+            
+            for (const file of capabilityFiles) {
+                if (file.endsWith('.js')) {
+                    try {
+                        const capabilityPath = path.join(capabilitiesDir, file);
+                        const CapabilityClass = require(capabilityPath);
+                        
+                        // Check if it's a constructor function
+                        if (typeof CapabilityClass === 'function') {
+                            const capability = new CapabilityClass(this.gateway);
+                            
+                            // Register the capability with the core
+                            if (capability.name && this.core.capabilityRegistry) {
+                                this.core.capabilityRegistry.register(capability.name, capability);
+                                console.log(`⚡ Capability loaded: ${capability.name}`);
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`❌ Failed to load capability ${file}:`, error.message);
+                    }
+                }
+            }
+            
             console.log('⚡ Basic capabilities initialized');
             
         } catch (error) {
