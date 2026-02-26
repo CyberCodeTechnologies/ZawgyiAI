@@ -203,6 +203,138 @@ class ZawgyiAI {
             }
         });
 
+        const executeCapabilityAction = async (capabilityName, action, params, userId = 'admin') => {
+            const capability = this.core?.capabilityRegistry?.get(capabilityName);
+            if (!capability || !capability.execute) {
+                return { success: false, status: 404, message: `${capabilityName} capability not found` };
+            }
+            const result = await capability.execute(action, params, userId);
+            if (!result) {
+                return { success: false, status: 500, message: 'Capability execution failed' };
+            }
+            if (result.success === false) {
+                return { success: false, status: 500, message: result.error || 'Capability execution failed' };
+            }
+            if (result.result && result.result.success === false) {
+                return { ...result.result, status: 400 };
+            }
+            if (result.result && typeof result.result === 'object') {
+                return { ...result.result, status: 200 };
+            }
+            return { success: true, result: result.result, status: 200 };
+        };
+
+        this.app.get('/api/viber/account', async (req, res) => {
+            try {
+                const payload = await executeCapabilityAction('viber', 'viber_get_account_info', {}, req.query.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.get('/api/viber/contacts', async (req, res) => {
+            try {
+                const payload = await executeCapabilityAction('viber', 'viber_get_contacts', {}, req.query.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.get('/api/viber/messages', async (req, res) => {
+            try {
+                const limit = parseInt(req.query.limit, 10);
+                const offset = parseInt(req.query.offset, 10);
+                const payload = await executeCapabilityAction('viber', 'viber_get_messages', {
+                    limit: Number.isNaN(limit) ? undefined : limit,
+                    offset: Number.isNaN(offset) ? undefined : offset
+                }, req.query.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.get('/api/viber/online-users', async (req, res) => {
+            try {
+                const payload = await executeCapabilityAction('viber', 'viber_get_online_users', {}, req.query.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.post('/api/viber/send', async (req, res) => {
+            try {
+                const { receiver, message, type } = req.body;
+                const payload = await executeCapabilityAction('viber', 'viber_send_message', { receiver, message, type }, req.body?.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.post('/api/viber/broadcast', async (req, res) => {
+            try {
+                const { message, recipients } = req.body;
+                const payload = await executeCapabilityAction('viber', 'viber_broadcast', { message, recipients }, req.body?.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.post('/api/viber/auto-reply', async (req, res) => {
+            try {
+                const { keyword, response, enabled } = req.body;
+                const payload = await executeCapabilityAction('viber', 'viber_auto_reply', { keyword, response, enabled }, req.body?.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.post('/api/viber/schedule', async (req, res) => {
+            try {
+                const { receiver, message, schedule_time } = req.body;
+                const payload = await executeCapabilityAction('viber', 'viber_schedule_message', { receiver, message, schedule_time }, req.body?.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.post('/api/viber/send-file', async (req, res) => {
+            try {
+                const { receiver, file_path, file_name } = req.body;
+                const payload = await executeCapabilityAction('viber', 'viber_send_file', { receiver, file_path, file_name }, req.body?.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
+        this.app.post('/api/viber/send-image', async (req, res) => {
+            try {
+                const { receiver, image_url, caption } = req.body;
+                const payload = await executeCapabilityAction('viber', 'viber_send_image', { receiver, image_url, caption }, req.body?.userId);
+                const { status, ...body } = payload;
+                res.status(status || 200).json(body);
+            } catch (error) {
+                res.status(500).json({ success: false, message: error.message });
+            }
+        });
+
         // Admin System APIs (OpenClaw style)
         
         // System stats
@@ -634,7 +766,7 @@ class ZawgyiAI {
 
         // Documentation
         this.app.get(['/docs', '/docs/'], (req, res) => {
-            const docsPath = path.join(__dirname, '../public/docs/index.html');
+            const docsPath = path.join(__dirname, '../docs/index.html');
             if (fs.existsSync(docsPath)) {
                 res.sendFile(docsPath);
             } else {
@@ -686,6 +818,30 @@ class ZawgyiAI {
             } catch (error) {
                 res.status(500).json({ success: false, error: error.message });
             }
+        });
+
+        this.app.post('/api/surveillance/upload', async (req, res) => {
+            try {
+                const { image } = req.body;
+                if (!image) {
+                    return res.status(400).json({ success: false, error: 'Image data required' });
+                }
+                const logsDir = path.join(process.cwd(), 'logs', 'surveillance');
+                await fs.ensureDir(logsDir);
+                const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+                const fileName = `capture_${Date.now()}.jpg`;
+                const filePath = path.join(logsDir, fileName);
+                await fs.writeFile(filePath, base64Data, 'base64');
+                res.json({ success: true, path: `/logs/surveillance/${fileName}`, file: fileName });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        this.app.post('/api/surveillance/error', (req, res) => {
+            const message = req.body?.error || 'Unknown capture error';
+            console.error('Surveillance capture error:', message);
+            res.json({ success: true });
         });
 
         // Surveillance Captures List API

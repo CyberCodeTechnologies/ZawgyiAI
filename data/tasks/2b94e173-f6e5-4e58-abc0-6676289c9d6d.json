@@ -1,0 +1,40 @@
+{
+  "id": "2b94e173-f6e5-4e58-abc0-6676289c9d6d",
+  "name": "[AUTO] Daily Briefing",
+  "description": "Autonomous background synchronization and processing",
+  "status": "completed",
+  "progress": 100,
+  "currentStep": 1,
+  "steps": [
+    {
+      "capability": "personal-assistant",
+      "action": "generate_briefing",
+      "params": {}
+    },
+    {
+      "capability": "multi-platform-chat",
+      "action": "broadcast",
+      "params": {
+        "message": "Good morning! Your daily briefing is ready."
+      }
+    }
+  ],
+  "results": [
+    {
+      "step": 0,
+      "success": false,
+      "error": "Action 'generate_briefing' not found in capability 'personal-assistant'"
+    },
+    {
+      "step": 1,
+      "success": false,
+      "error": "Action 'broadcast' not found in capability 'multi-platform-chat'"
+    }
+  ],
+  "metadata": {
+    "source": "scheduler",
+    "type": "24/7"
+  },
+  "createdAt": "2026-02-26T01:30:00.054Z",
+  "updatedAt": "2026-02-26T01:30:03.084Z"
+}

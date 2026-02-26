@@ -1,0 +1,68 @@
+{
+  "id": "d97fb674-9094-434e-8c9b-8e35c69e8a0f",
+  "name": "[AUTO] Inbox Sync",
+  "description": "Autonomous background synchronization and processing",
+  "status": "completed",
+  "progress": 100,
+  "currentStep": 1,
+  "steps": [
+    {
+      "capability": "email",
+      "action": "read",
+      "params": {
+        "limit": 5
+      }
+    },
+    {
+      "capability": "inbox",
+      "action": "summarize",
+      "params": {}
+    }
+  ],
+  "results": [
+    {
+      "step": 0,
+      "success": true,
+      "result": {
+        "success": true,
+        "capability": "email",
+        "action": "read",
+        "result": {
+          "message": "Found 2 emails in INBOX",
+          "emails": [
+            {
+              "id": "1",
+              "from": "test@example.com",
+              "subject": "Test Email 1",
+              "body": "This is a test email",
+              "date": "2026-02-26T01:15:00.123Z",
+              "unread": true
+            },
+            {
+              "id": "2",
+              "from": "user@example.com",
+              "subject": "Important Update",
+              "body": "Please review this important information",
+              "date": "2026-02-26T00:15:00.123Z",
+              "unread": false
+            }
+          ],
+          "folder": "INBOX",
+          "unread_only": false
+        },
+        "timestamp": "2026-02-26T01:15:00.129Z"
+      }
+    },
+    {
+      "step": 1,
+      "success": false,
+      "error": "Action 'summarize' not found in capability 'inbox'"
+    }
+  ],
+  "metadata": {
+    "source": "scheduler",
+    "type": "24/7"
+  },
+  "createdAt": "2026-02-26T01:15:00.117Z",
+  "updatedAt": "2026-02-26T01:15:03.169Z"
+}

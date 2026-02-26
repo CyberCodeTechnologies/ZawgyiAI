@@ -1,0 +1,54 @@
+{
+  "id": "27c4b7c3-836d-43f1-85ea-b47ba497605e",
+  "name": "[AUTO] Schedule Optimization",
+  "description": "Autonomous background synchronization and processing",
+  "status": "completed",
+  "progress": 100,
+  "currentStep": 1,
+  "steps": [
+    {
+      "capability": "calendar",
+      "action": "read",
+      "params": {
+        "range": "today"
+      }
+    },
+    {
+      "capability": "productivity-planning",
+      "action": "optimize_schedule",
+      "params": {}
+    }
+  ],
+  "results": [
+    {
+      "step": 0,
+      "success": true,
+      "result": {
+        "success": true,
+        "capability": "calendar",
+        "action": "read",
+        "result": {
+          "message": "Found 0 events",
+          "events": [],
+          "date_range": {
+            "start": "2026-02-26T01:30:00.541Z",
+            "end": "2026-03-05T01:30:00.541Z"
+          },
+          "timestamp": "2026-02-26T01:30:00.545Z"
+        },
+        "timestamp": "2026-02-26T01:30:00.546Z"
+      }
+    },
+    {
+      "step": 1,
+      "success": false,
+      "error": "Action 'optimize_schedule' not found in capability 'productivity-planning'"
+    }
+  ],
+  "metadata": {
+    "source": "scheduler",
+    "type": "24/7"
+  },
+  "createdAt": "2026-02-26T01:30:00.537Z",
+  "updatedAt": "2026-02-26T01:30:03.557Z"
+}

@@ -1,0 +1,118 @@
+{
+  "id": "7ab8a22a-fd24-4eec-98c5-39e1b6373206",
+  "name": "[AUTO] Global Intelligence Sync",
+  "description": "Autonomous background synchronization and processing",
+  "status": "completed",
+  "progress": 100,
+  "currentStep": 4,
+  "steps": [
+    {
+      "capability": "research-knowledge",
+      "action": "autonomous_learn",
+      "params": {
+        "category": "business_intelligence"
+      }
+    },
+    {
+      "capability": "research-knowledge",
+      "action": "autonomous_learn",
+      "params": {
+        "category": "art_and_culture"
+      }
+    },
+    {
+      "capability": "research-knowledge",
+      "action": "autonomous_learn",
+      "params": {
+        "category": "sports_and_golf"
+      }
+    },
+    {
+      "capability": "research-knowledge",
+      "action": "autonomous_learn",
+      "params": {
+        "category": "science_and_universe"
+      }
+    },
+    {
+      "capability": "binance",
+      "action": "get_ticker",
+      "params": {
+        "symbol": "BTCUSDT"
+      }
+    }
+  ],
+  "results": [
+    {
+      "step": 0,
+      "success": true,
+      "result": {
+        "success": true,
+        "capability": "research-knowledge",
+        "action": "autonomous_learn",
+        "result": {
+          "success": true,
+          "learned_count": 2,
+          "category": "business_intelligence"
+        },
+        "timestamp": "2026-02-26T01:30:00.051Z"
+      }
+    },
+    {
+      "step": 1,
+      "success": true,
+      "result": {
+        "success": true,
+        "capability": "research-knowledge",
+        "action": "autonomous_learn",
+        "result": {
+          "success": true,
+          "learned_count": 2,
+          "category": "art_and_culture"
+        },
+        "timestamp": "2026-02-26T01:30:01.561Z"
+      }
+    },
+    {
+      "step": 2,
+      "success": true,
+      "result": {
+        "success": true,
+        "capability": "research-knowledge",
+        "action": "autonomous_learn",
+        "result": {
+          "success": true,
+          "learned_count": 2,
+          "category": "sports_and_golf"
+        },
+        "timestamp": "2026-02-26T01:30:03.069Z"
+      }
+    },
+    {
+      "step": 3,
+      "success": true,
+      "result": {
+        "success": true,
+        "capability": "research-knowledge",
+        "action": "autonomous_learn",
+        "result": {
+          "success": true,
+          "learned_count": 2,
+          "category": "science_and_universe"
+        },
+        "timestamp": "2026-02-26T01:30:04.576Z"
+      }
+    },
+    {
+      "step": 4,
+      "success": false,
+      "error": "Action 'get_ticker' not found in capability 'binance'"
+    }
+  ],
+  "metadata": {
+    "source": "scheduler",
+    "type": "24/7"
+  },
+  "createdAt": "2026-02-26T01:30:00.031Z",
+  "updatedAt": "2026-02-26T01:30:07.601Z"
+}

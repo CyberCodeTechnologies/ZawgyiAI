@@ -27,6 +27,7 @@ class ZawgyiCore {
         this.setupTaskManager();
         this.setupKnowledgeBase();
         this.setupPersonaManager();
+        this.setupAgentManager();
         this.setupAutonomousSystems();
 
         console.log(`✅ ${this.name} Core Framework Ready`);
@@ -40,6 +41,17 @@ class ZawgyiCore {
     setupKnowledgeBase() {
         const ZawgyiKnowledgeBase = require('./zawgyi-knowledge-base');
         this.knowledgeBase = new ZawgyiKnowledgeBase(this);
+    }
+
+    setupAgentManager() {
+        const { AgentManager, BaseAgent } = require('./agents');
+        this.agentManager = new AgentManager();
+        class SubAgent extends BaseAgent {
+            constructor(id, type, config = {}) {
+                super(id, type, config);
+            }
+        }
+        this.agentManager.registerAgentType('sub-agent', SubAgent);
     }
 
     setupAutonomousSystems() {

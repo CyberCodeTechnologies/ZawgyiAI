@@ -610,7 +610,16 @@
     </div>
 
     <script>
-        const baseURL = 'http://localhost:3005';
+        const baseURL = window.location.origin;
+        const fetchJson = async (url, options) => {
+            const response = await fetch(url, options);
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                const message = data.error || data.message || `Request failed: ${response.status}`;
+                throw new Error(message);
+            }
+            return data;
+        };
         let continuousIntervals = {};
         let automationResults = {};
         let totalTasks = 0;
@@ -689,28 +698,28 @@
             const responses = [];
             
             // Time check
-            const timeResponse = await fetch(`${baseURL}/process`, {
+            const timeResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'what time is it', user_id: 'automation' })
+                body: JSON.stringify({ message: 'what time is it', userId: 'automation' })
             });
-            responses.push(timeResponse.data.response);
+            responses.push(timeResponse.message || timeResponse.response || timeResponse.error || 'Time check completed');
             
             // Date check
-            const dateResponse = await fetch(`${baseURL}/process`, {
+            const dateResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'what is today', user_id: 'automation' })
+                body: JSON.stringify({ message: 'what is today', userId: 'automation' })
             });
-            responses.push(dateResponse.data.response);
+            responses.push(dateResponse.message || dateResponse.response || dateResponse.error || 'Date check completed');
             
             // Math calculation
-            const mathResponse = await fetch(`${baseURL}/process`, {
+            const mathResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'calculate 25 * 4', user_id: 'automation' })
+                body: JSON.stringify({ message: 'calculate 25 * 4', userId: 'automation' })
             });
-            responses.push(mathResponse.data.response);
+            responses.push(mathResponse.message || mathResponse.response || mathResponse.error || 'Math check completed');
             
             return responses;
         }
@@ -719,20 +728,20 @@
             const responses = [];
             
             // List directory
-            const listResponse = await fetch(`${baseURL}/process`, {
+            const listResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: '\\list', user_id: 'automation' })
+                body: JSON.stringify({ message: '\\list', userId: 'automation' })
             });
-            responses.push(listResponse.data.response);
+            responses.push(listResponse.message || listResponse.response || listResponse.error || 'List command completed');
             
             // Create file
-            const createResponse = await fetch(`${baseURL}/process`, {
+            const createResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: '\\create automation_test.txt', user_id: 'automation' })
+                body: JSON.stringify({ message: '\\create automation_test.txt', userId: 'automation' })
             });
-            responses.push(createResponse.data.response);
+            responses.push(createResponse.message || createResponse.response || createResponse.error || 'Create command completed');
             
             return responses;
         }
@@ -741,28 +750,28 @@
             const responses = [];
             
             // Get contacts
-            const contactsResponse = await fetch(`${baseURL}/process`, {
+            const contactsResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: '\\viber_contacts', user_id: 'automation' })
+                body: JSON.stringify({ message: '\\viber_contacts', userId: 'automation' })
             });
-            responses.push(contactsResponse.data.response);
+            responses.push(contactsResponse.message || contactsResponse.response || contactsResponse.error || 'Contacts check completed');
             
             // Send message
-            const messageResponse = await fetch(`${baseURL}/process`, {
+            const messageResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: '\\viber_send user1 Automated message!', user_id: 'automation' })
+                body: JSON.stringify({ message: '\\viber_send user1 Automated message!', userId: 'automation' })
             });
-            responses.push(messageResponse.data.response);
+            responses.push(messageResponse.message || messageResponse.response || messageResponse.error || 'Message check completed');
             
             // Broadcast
-            const broadcastResponse = await fetch(`${baseURL}/api/viber/broadcast`, {
+            const broadcastResponse = await fetchJson(`${baseURL}/api/viber/broadcast`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: 'Automated broadcast!', recipients: ['user1', 'user2'] })
             });
-            responses.push(broadcastResponse.data.message);
+            responses.push(broadcastResponse.message || 'Broadcast completed');
             
             return responses;
         }
@@ -771,8 +780,8 @@
             const responses = [];
             
             // Recording status
-            const recordingResponse = await fetch(`${baseURL}/api/surveillance/recording/status`);
-            responses.push(`Recording: ${recordingResponse.data.isRecording ? 'Active' : 'Inactive'}`);
+            const recordingResponse = await fetchJson(`${baseURL}/api/surveillance/recording/status`);
+            responses.push(`Recording: ${recordingResponse.isRecording ? 'Active' : 'Inactive'}`);
             
             return responses;
         }
@@ -781,12 +790,12 @@
             const responses = [];
             
             // Latest news
-            const latestResponse = await fetch(`${baseURL}/api/news?limit=5`);
-            responses.push(`Fetched ${latestResponse.data.data ? latestResponse.data.data.length : 0} news items`);
+            const latestResponse = await fetchJson(`${baseURL}/api/news?limit=5`);
+            responses.push(`Fetched ${latestResponse.data ? latestResponse.data.length : 0} news items`);
             
             // Tech news
-            const techResponse = await fetch(`${baseURL}/api/news?category=tech&limit=3`);
-            responses.push(`Fetched ${techResponse.data.data ? techResponse.data.data.length : 0} tech news items`);
+            const techResponse = await fetchJson(`${baseURL}/api/news?category=tech&limit=3`);
+            responses.push(`Fetched ${techResponse.data ? techResponse.data.length : 0} tech news items`);
             
             return responses;
         }
@@ -795,20 +804,20 @@
             const responses = [];
             
             // Spawn agents
-            const spawnResponse = await fetch(`${baseURL}/process`, {
+            const spawnResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'create agent', user_id: 'automation' })
+                body: JSON.stringify({ message: 'create agent', userId: 'automation' })
             });
-            responses.push(spawnResponse.data.response);
+            responses.push(spawnResponse.message || spawnResponse.response || spawnResponse.error || 'Agent create completed');
             
             // Parallel processing
-            const parallelResponse = await fetch(`${baseURL}/process`, {
+            const parallelResponse = await fetchJson(`${baseURL}/process`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: 'analyze data with multiple agents', user_id: 'automation' })
+                body: JSON.stringify({ message: 'analyze data with multiple agents', userId: 'automation' })
             });
-            responses.push(parallelResponse.data.response);
+            responses.push(parallelResponse.message || parallelResponse.response || parallelResponse.error || 'Parallel processing completed');
             
             return responses;
         }
@@ -817,16 +826,17 @@
             const responses = [];
             
             // Health check
-            const healthResponse = await fetch(`${baseURL}/health`);
-            responses.push(healthResponse.data.status);
+            const healthResponse = await fetchJson(`${baseURL}/health`);
+            responses.push(healthResponse.status || 'Health check completed');
             
             // System status
-            const statusResponse = await fetch(`${baseURL}/status`);
-            responses.push(`${statusResponse.data.core.capabilities.length} capabilities active`);
+            const statusResponse = await fetchJson(`${baseURL}/status`);
+            const capabilityCount = statusResponse.core?.capabilities?.length ?? 0;
+            responses.push(`${capabilityCount} capabilities active`);
             
             // Message history
-            const messagesResponse = await fetch(`${baseURL}/api/messages`);
-            responses.push(`${messagesResponse.data.messages.length} messages in history`);
+            const messagesResponse = await fetchJson(`${baseURL}/api/messages`);
+            responses.push(`${messagesResponse.messages ? messagesResponse.messages.length : 0} messages in history`);
             
             return responses;
         }

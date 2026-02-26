@@ -6,6 +6,7 @@ class BaseAgent extends EventEmitter {
         this.id = id;
         this.type = type;
         this.config = config;
+        this.name = config.name || id;
         this.status = 'idle';
         this.skills = [];
         this.memory = new Map();
