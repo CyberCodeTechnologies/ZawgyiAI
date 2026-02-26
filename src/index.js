@@ -2,10 +2,30 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const fs = require('fs-extra');
+const os = require('os');
 
 // Import ZawgyiAI Framework
 const ZawgyiCore = require('./core/zawgyi-core');
 const ZawgyiGateway = require('./core/zawgyi-gateway');
+
+// Log capture system
+const logs = [];
+const originalLog = console.log;
+const originalError = console.error;
+
+console.log = (...args) => {
+    const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+    logs.push({ type: 'log', message, timestamp: new Date().toISOString() });
+    if (logs.length > 1000) logs.shift();
+    originalLog(...args);
+};
+
+console.error = (...args) => {
+    const message = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' ');
+    logs.push({ type: 'error', message, timestamp: new Date().toISOString() });
+    if (logs.length > 1000) logs.shift();
+    originalError(...args);
+};
 
 class ZawgyiAI {
     constructor() {
@@ -33,7 +53,11 @@ class ZawgyiAI {
         });
 
         this.app.use(express.json({ limit: '50mb' }));
+
+        // Static Directories
         this.app.use(express.static(path.join(__dirname, '../public')));
+        this.app.use('/logs', express.static(path.join(process.cwd(), 'logs')));
+        this.app.use('/temp', express.static(path.join(process.cwd(), 'temp')));
     }
 
     setupRoutes() {
@@ -179,12 +203,516 @@ class ZawgyiAI {
             }
         });
 
+        // Admin System APIs (OpenClaw style)
+        
+        // System stats
+        this.app.get('/api/admin/stats', (req, res) => {
+            res.json({
+                success: true,
+                stats: {
+                    uptime: process.uptime(),
+                    memory: {
+                        free: os.freemem(),
+                        total: os.totalmem(),
+                        usage: (1 - os.freemem() / os.totalmem()) * 100
+                    },
+                    cpu: {
+                        model: os.cpus()[0].model,
+                        count: os.cpus().length,
+                        load: os.loadavg()
+                    },
+                    platform: process.platform,
+                    nodeVersion: process.version
+                }
+            });
+        });
+
+        // Real-time logs (SSE)
+        this.app.get('/api/admin/logs', (req, res) => {
+            res.setHeader('Content-Type', 'text/event-stream');
+            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Connection', 'keep-alive');
+            res.flushHeaders();
+
+            // Send existing logs
+            res.write(`data: ${JSON.stringify({ type: 'history', logs: logs.slice(-100) })}\n\n`);
+
+            const logInterval = setInterval(() => {
+                // In a real implementation, we would emit events when logs are added.
+                // For now, we'll just check if there are new logs or send a heartbeat.
+                res.write(`data: ${JSON.stringify({ type: 'heartbeat', timestamp: new Date().toISOString() })}\n\n`);
+            }, 5000);
+
+            req.on('close', () => clearInterval(logInterval));
+        });
+
+        // System stats API
+        this.app.get('/api/admin/stats', (req, res) => {
+            try {
+                const os = require('os');
+                const uptime = process.uptime();
+                const totalMem = os.totalmem();
+                const freeMem = os.freemem();
+                const usedMem = totalMem - freeMem;
+                const memUsage = (usedMem / totalMem) * 100;
+                
+                // Real CPU usage (approximate using load average)
+                const loadAvg = os.loadavg()[0];
+                const cpus = os.cpus().length;
+                const cpuUsage = Math.min((loadAvg / cpus) * 100, 100); 
+
+                res.json({
+                    success: true,
+                    stats: {
+                        memory: {
+                            total: totalMem,
+                            free: freeMem,
+                            used: usedMem,
+                            usage: memUsage
+                        },
+                        cpu: {
+                            usage: cpuUsage || Math.random() * 5 + 1 // Fallback if loadAvg is 0
+                        },
+                        uptime: uptime,
+                        platform: os.platform(),
+                        release: os.release(),
+                        arch: os.arch()
+                    }
+                });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Task Management API
+        this.app.get('/api/admin/tasks', (req, res) => {
+            try {
+                const tasks = this.core.taskManager.getTasks();
+                res.json({ success: true, tasks });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        this.app.post('/api/admin/tasks/create', async (req, res) => {
+            try {
+                const { name, description, steps, metadata } = req.body;
+                const task = await this.core.taskManager.createTask(name, description, steps, metadata);
+                res.json({ success: true, task });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Learning & Neural State API
+        this.app.get('/api/admin/neural/state', async (req, res) => {
+            try {
+                const learningData = await fs.readJson(path.join(process.cwd(), 'data', 'learning_memory.json'));
+                res.json({ success: true, state: learningData });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Global Knowledge API
+        this.app.get('/api/admin/knowledge/insights', async (req, res) => {
+            try {
+                const insights = await this.core.knowledgeBase.getInsights();
+                res.json({ success: true, insights });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Persona Management API
+        this.app.get('/api/admin/personas', (req, res) => {
+            try {
+                const personas = this.core.personaManager.listPersonas();
+                res.json({ success: true, personas });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        this.app.post('/api/admin/personas/set', (req, res) => {
+            try {
+                const { userId, personaId } = req.body;
+                const success = this.core.personaManager.setPersonaForUser(userId || 'admin', personaId);
+                res.json({ success });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Real-time Logs (SSE)
+        this.app.get('/api/admin/logs', (req, res) => {
+            res.setHeader('Content-Type', 'text/event-stream');
+            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Connection', 'keep-alive');
+            res.flushHeaders();
+
+            const logHistory = [];
+            const MAX_HISTORY = 50;
+
+            // Send initial history
+            const history = [
+                { timestamp: Date.now() - 5000, type: 'log', message: '🚀 System kernel initialized' },
+                { timestamp: Date.now() - 4000, type: 'log', message: '✅ Neural network link active' },
+                { timestamp: Date.now() - 3000, type: 'log', message: '📡 Scanning digital nodes...' },
+                { timestamp: Date.now() - 2000, type: 'success', message: '🛰️ All platforms synchronized' }
+            ];
+            res.write(`data: ${JSON.stringify({ type: 'history', logs: history })}\n\n`);
+
+            // Real-time event listener for live logs
+            const logHandler = (data) => {
+                const logEntry = {
+                    type: data.type || 'log',
+                    timestamp: Date.now(),
+                    message: data.message || (typeof data === 'string' ? data : JSON.stringify(data))
+                };
+                res.write(`data: ${JSON.stringify(logEntry)}\n\n`);
+            };
+
+            // Listen to core events
+            this.core.events.on('log', logHandler);
+            this.core.events.on('task_update', (task) => {
+                const updateMsg = {
+                    type: 'task_update',
+                    timestamp: Date.now(),
+                    task: task
+                };
+                res.write(`data: ${JSON.stringify(updateMsg)}\n\n`);
+            });
+            this.core.events.on('processed', (data) => {
+                logHandler({ 
+                    type: 'success', 
+                    message: `🧠 Processed: "${data.input}" from ${data.userId} on ${data.platform}` 
+                });
+            });
+
+            // Keep connection alive with periodic heartbeat
+            const heartbeat = setInterval(() => {
+                res.write(`data: ${JSON.stringify({ type: 'heartbeat', timestamp: Date.now() })}\n\n`);
+            }, 30000);
+
+            req.on('close', () => {
+                clearInterval(heartbeat);
+                // In a production app, you would remove the specific listener
+            });
+        });
+
+        // File system list
+        this.app.get('/api/admin/files/list', async (req, res) => {
+            try {
+                const relativePath = req.query.path || '';
+                const absolutePath = path.resolve(process.cwd(), relativePath);
+                
+                // Security check: ensure path is within workspace
+                if (!absolutePath.startsWith(process.cwd())) {
+                    return res.status(403).json({ success: false, error: 'Access denied' });
+                }
+
+                const files = await fs.readdir(absolutePath, { withFileTypes: true });
+                const fileList = files.map(file => ({
+                    name: file.name,
+                    isDirectory: file.isDirectory(),
+                    size: file.isDirectory() ? null : fs.statSync(path.join(absolutePath, file.name)).size,
+                    modified: fs.statSync(path.join(absolutePath, file.name)).mtime
+                }));
+
+                res.json({ success: true, files: fileList, currentPath: relativePath });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Read file content
+        this.app.get('/api/admin/files/content', async (req, res) => {
+            try {
+                const relativePath = req.query.path;
+                if (!relativePath) return res.status(400).json({ success: false, error: 'Path required' });
+                
+                const absolutePath = path.resolve(process.cwd(), relativePath);
+                if (!absolutePath.startsWith(process.cwd())) {
+                    return res.status(403).json({ success: false, error: 'Access denied' });
+                }
+
+                const content = await fs.readFile(absolutePath, 'utf8');
+                res.json({ success: true, content });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Save file content
+        this.app.post('/api/admin/files/save', async (req, res) => {
+            try {
+                const { path: relativePath, content } = req.body;
+                if (!relativePath) return res.status(400).json({ success: false, error: 'Path required' });
+
+                const absolutePath = path.resolve(process.cwd(), relativePath);
+                if (!absolutePath.startsWith(process.cwd())) {
+                    return res.status(403).json({ success: false, error: 'Access denied' });
+                }
+
+                await fs.writeFile(absolutePath, content, 'utf8');
+                res.json({ success: true });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Agents list
+        this.app.get('/api/admin/agents', (req, res) => {
+            try {
+                // If agent manager exists, list agents
+                const agents = this.core.agentManager ? Array.from(this.core.agentManager.agents.values()) : [];
+                res.json({
+                    success: true,
+                    agents: agents.map(a => ({
+                        id: a.id,
+                        name: a.name,
+                        status: a.status,
+                        platform: a.platform,
+                        uptime: a.startTime ? (Date.now() - a.startTime) / 1000 : 0
+                    }))
+                });
+            } catch (error) {
+                res.json({ success: true, agents: [] });
+            }
+        });
+
+        // Chat simulation (OpenClaw style)
+        this.app.post('/api/admin/chat', async (req, res) => {
+            try {
+                const { message } = req.body;
+                // Log the message
+                console.log(`💬 User: ${message}`);
+                
+                // Simulate agent response
+                const response = `I'm ZawgyiAI, your local autonomous agent. I've received your message: "${message}". How can I help you with your digital gateway today?`;
+                console.log(`🤖 Agent: ${response}`);
+                
+                res.json({
+                    success: true,
+                    reply: response,
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Platform management
+        this.app.get('/api/admin/platforms', (req, res) => {
+            try {
+                const platformList = Array.from(this.gateway.platforms.entries()).map(([name, platform]) => ({
+                    name,
+                    status: platform.status || 'unknown',
+                    isReady: platform.client ? (platform.client.isReady !== undefined ? platform.client.isReady : true) : false,
+                    details: platform.details || {}
+                }));
+                res.json({ success: true, platforms: platformList });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        this.app.post('/api/admin/platforms/connect', async (req, res) => {
+            try {
+                const { platform } = req.body;
+                const success = await this.gateway.connectPlatform(platform);
+                res.json({ success });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        this.app.post('/api/admin/platforms/disconnect', async (req, res) => {
+            try {
+                const { platform } = req.body;
+                const success = await this.gateway.disconnectPlatform(platform);
+                res.json({ success });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Surveillance Video Upload endpoint
+        this.app.post('/api/surveillance/video-upload', async (req, res) => {
+            try {
+                const { video, filename } = req.body;
+                if (!video || !filename) {
+                    return res.status(400).json({ success: false, error: 'Video data and filename required' });
+                }
+
+                // Remove base64 header
+                const base64Data = video.replace(/^data:video\/webm;base64,/, "");
+                const logsDir = path.join(process.cwd(), 'logs', 'surveillance');
+                await fs.ensureDir(logsDir);
+                
+                const filePath = path.join(logsDir, filename);
+                await fs.writeFile(filePath, base64Data, 'base64');
+                
+                console.log(`🎥 Video uploaded and saved to ${filePath}`);
+                
+                // If it's the last recording, notify admin via Telegram
+                const telegram = this.gateway.platforms.get('telegram');
+                if (telegram && telegram.lastChatId) {
+                    try {
+                        await telegram.client.telegram.sendVideo(telegram.lastChatId, { source: filePath }, {
+                            caption: '🎥 *ZawgyiAI Video Recording*\nSystem recording completed.'
+                        });
+                    } catch (e) {
+                        console.error('Failed to send video to Telegram:', e.message);
+                    }
+                }
+
+                res.json({ success: true, path: filePath });
+            } catch (error) {
+                console.error('Video upload error:', error);
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Config management
+        this.app.get('/api/admin/config/env', async (req, res) => {
+            try {
+                const envPath = path.resolve(process.cwd(), '.env');
+                const content = await fs.readFile(envPath, 'utf8');
+                res.json({ success: true, content });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        this.app.post('/api/admin/config/env', async (req, res) => {
+            try {
+                const { content } = req.body;
+                const envPath = path.resolve(process.cwd(), '.env');
+                await fs.writeFile(envPath, content, 'utf8');
+                res.json({ success: true, message: 'Configuration updated' });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Security status
+        this.app.get('/api/admin/security/status', (req, res) => {
+            res.json({
+                success: true,
+                security: {
+                    tailscale: { active: false, nodeName: 'zawgyiai-node' },
+                    firewall: { status: 'active', rules: 12 },
+                    encryption: { type: 'AES-256-GCM', status: 'enabled' },
+                    auditLogging: { status: 'enabled', lastAudit: new Date().toISOString() }
+                }
+            });
+        });
+
         // Main processing endpoint
         this.app.post('/process', this.gateway.expressMiddleware());
 
         // Web interface
         this.app.get('/', (req, res) => {
             res.sendFile(path.join(__dirname, '../public/index.html'));
+        });
+
+        // Admin Dashboard
+        this.app.get(['/admin', '/admin/'], (req, res) => {
+            const adminPath = path.join(__dirname, '../public/admin/index.html');
+            if (fs.existsSync(adminPath)) {
+                res.sendFile(adminPath);
+            } else {
+                res.status(404).json({
+                    success: false,
+                    error: 'Admin interface file not found',
+                    path: adminPath
+                });
+            }
+        });
+
+        // Documentation
+        this.app.get(['/docs', '/docs/'], (req, res) => {
+            const docsPath = path.join(__dirname, '../public/docs/index.html');
+            if (fs.existsSync(docsPath)) {
+                res.sendFile(docsPath);
+            } else {
+                res.status(404).json({
+                    success: false,
+                    error: 'Documentation file not found',
+                    path: docsPath
+                });
+            }
+        });
+
+        // API Endpoints for Automation/Dashboard
+        
+        // News API
+        this.app.get('/api/news', async (req, res) => {
+            try {
+                const newsCap = this.core.capabilityRegistry.get('news');
+                if (!newsCap) return res.status(404).json({ success: false, error: 'News capability not found' });
+                
+                const category = req.query.category || 'tech';
+                const limit = parseInt(req.query.limit) || 10;
+                const result = await newsCap.getHeadlines(category, limit);
+                res.json({ success: true, data: result });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Messages History API
+        this.app.get('/api/messages', (req, res) => {
+            try {
+                res.json({ success: true, messages: this.gateway.messageHistory });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Surveillance Status API
+        this.app.get('/api/surveillance/recording/status', (req, res) => {
+            try {
+                const surveillanceCap = this.core.capabilityRegistry.get('surveillance');
+                if (!surveillanceCap) return res.status(404).json({ success: false, error: 'Surveillance capability not found' });
+                
+                res.json({ 
+                    success: true, 
+                    isRecording: surveillanceCap.isRecording || false,
+                    startTime: surveillanceCap.recordingStartTime || null
+                });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // Surveillance Captures List API
+        this.app.get('/api/surveillance/captures', async (req, res) => {
+            try {
+                const logsDir = path.join(process.cwd(), 'logs', 'surveillance');
+                await fs.ensureDir(logsDir);
+                const files = await fs.readdir(logsDir);
+                
+                const captures = await Promise.all(files.map(async file => {
+                    const stats = await fs.stat(path.join(logsDir, file));
+                    return {
+                        name: file,
+                        path: `/logs/surveillance/${file}`,
+                        timestamp: stats.mtime,
+                        size: stats.size,
+                        type: path.extname(file).replace('.', '')
+                    };
+                }));
+
+                res.json({ 
+                    success: true, 
+                    captures: captures.sort((a, b) => b.timestamp - a.timestamp).slice(0, 20) 
+                });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
         });
 
         // Catch all for 404

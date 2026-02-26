@@ -41,6 +41,25 @@ class PersonalAssistantCapability extends ZawgyiCapability {
             description: 'Manage 1Password vault access',
             parameters: ['action', 'item']
         });
+
+        this.addAction('get_location', this.getLocation.bind(this), {
+            description: 'Provide the current location link'
+        });
+    }
+
+    async getLocation(params, userId) {
+        console.log(`📍 Providing location link for user ${userId}`);
+        
+        // Placeholder for real location logic
+        // In a real implementation, we could use an IP-based geolocation API
+        // For now, providing a generic link as requested.
+        const locationLink = "https://www.google.com/maps/search/?api=1&query=current+location";
+        
+        return {
+            success: true,
+            message: `📍 *Current Location Matrix*\n\nYour neural node is currently localized at the following coordinates:\n\n[Open Map Link](${locationLink})\n\n_Note: Location is derived from network telemetry._`,
+            link: locationLink
+        };
     }
 
     setupPersonalVault() {

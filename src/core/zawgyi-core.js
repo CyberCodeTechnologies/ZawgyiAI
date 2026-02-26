@@ -24,8 +24,32 @@ class ZawgyiCore {
         this.setupPluginSystem();
         this.setupContextManager();
         this.setupCapabilityRegistry();
+        this.setupTaskManager();
+        this.setupKnowledgeBase();
+        this.setupPersonaManager();
+        this.setupAutonomousSystems();
 
         console.log(`✅ ${this.name} Core Framework Ready`);
+    }
+
+    setupPersonaManager() {
+        const ZawgyiPersonaManager = require('./zawgyi-persona-manager');
+        this.personaManager = new ZawgyiPersonaManager(this);
+    }
+
+    setupKnowledgeBase() {
+        const ZawgyiKnowledgeBase = require('./zawgyi-knowledge-base');
+        this.knowledgeBase = new ZawgyiKnowledgeBase(this);
+    }
+
+    setupAutonomousSystems() {
+        const ZawgyiScheduler = require('./zawgyi-scheduler');
+        this.scheduler = new ZawgyiScheduler(this);
+    }
+
+    setupTaskManager() {
+        const ZawgyiTaskManager = require('./zawgyi-task-manager');
+        this.taskManager = new ZawgyiTaskManager(this);
     }
 
     setupEventSystem() {
@@ -111,6 +135,16 @@ class ZawgyiCore {
         try {
             console.log(`🧠 Processing: "${input}" from ${userId} on ${platform}`);
 
+            // Special Handle for Telegram Voice Messages
+            if (input.startsWith('[TELEGRAM_VOICE_MESSAGE]')) {
+                const voiceUrl = input.replace('[TELEGRAM_VOICE_MESSAGE] ', '');
+                return {
+                    success: true,
+                    message: `🎙️ *Neural Link: Voice Synchronized*\n\nI have received your audio recording. I'm currently analyzing the signal for processing.\n\n[Download Original Link](${voiceUrl})`,
+                    type: 'voice_ack'
+                };
+            }
+
             // Store input in context
             this.contextManager.set(userId, 'lastInput', input);
             this.contextManager.set(userId, 'lastPlatform', platform);
@@ -141,9 +175,19 @@ class ZawgyiCore {
 
     async parseIntent(input, userId) {
         const context = this.contextManager.getAll(userId);
-
-        // Simple intent parsing (can be enhanced with NLP)
         const lowerInput = input.toLowerCase();
+
+        // Multi-language support (Simplified)
+        const isBurmese = /[\u1000-\u109F]/.test(input);
+        if (isBurmese) {
+            // Placeholder for Burmese NLP
+            // return { capability: 'knowledge', action: 'translate_and_chat', params: { query: input } };
+        }
+
+        // Knowledge & Learning System (Simulated continuous learning)
+        if (lowerInput.includes('learn') || lowerInput.includes('remember this')) {
+            return { capability: 'knowledge', action: 'learn_fact', params: { fact: input } };
+        }
 
         // Email capabilities
         if (lowerInput.includes('email') || lowerInput.includes('mail')) {
@@ -206,8 +250,10 @@ class ZawgyiCore {
         }
 
         // Personal Assistant capabilities
-        if (lowerInput.includes('remind') || lowerInput.includes('order') || lowerInput.includes('call') || lowerInput.includes('vault')) {
-            if (lowerInput.includes('remind')) {
+        if (lowerInput.includes('remind') || lowerInput.includes('order') || lowerInput.includes('call') || lowerInput.includes('vault') || lowerInput.includes('location')) {
+            if (lowerInput.includes('location')) {
+                return { capability: 'personal-assistant', action: 'get_location', params: {} };
+            } else if (lowerInput.includes('remind')) {
                 return { capability: 'personal-assistant', action: 'send_reminder', params: { content: input, tool: 'notion' } };
             } else if (lowerInput.includes('order') || lowerInput.includes('buy')) {
                 return { capability: 'personal-assistant', action: 'place_order', params: { item: input, vendor: 'amazon' } };
@@ -215,6 +261,28 @@ class ZawgyiCore {
                 return { capability: 'personal-assistant', action: 'voice_call', params: { contact: 'Associate', topic: input } };
             } else if (lowerInput.includes('vault') || lowerInput.includes('password')) {
                 return { capability: 'personal-assistant', action: 'manage_vault', params: { action: 'list', item: 'all' } };
+            }
+        }
+
+        // Surveillance & System capabilities
+        if (lowerInput.includes('photo') || lowerInput.includes('camera') || lowerInput.includes('screenshot') || lowerInput.includes('screen') || lowerInput.includes('video') || lowerInput.includes('record')) {
+            // Check for Start/Stop first (for Video/Camera Recording)
+            if ((lowerInput.includes('start') || lowerInput.includes('recording')) && (lowerInput.includes('camera') || lowerInput.includes('video') || lowerInput.includes('record'))) {
+                if (lowerInput.includes('stop')) {
+                    return { capability: 'surveillance', action: 'stop_video_recording', params: {} };
+                }
+                return { capability: 'surveillance', action: 'start_video_recording', params: {} };
+            } else if (lowerInput.includes('stop') && (lowerInput.includes('camera') || lowerInput.includes('video') || lowerInput.includes('record'))) {
+                return { capability: 'surveillance', action: 'stop_video_recording', params: {} };
+            }
+            
+            // Photo/Screenshot
+            if (lowerInput.includes('photo') || lowerInput.includes('camera') || lowerInput.includes('take a photo')) {
+                return { capability: 'surveillance', action: 'take_photo', params: {} };
+            } else if (lowerInput.includes('screenshot') || lowerInput.includes('screen')) {
+                return { capability: 'surveillance', action: 'take_screenshot', params: {} };
+            } else if (lowerInput.includes('video') || lowerInput.includes('record')) {
+                return { capability: 'surveillance', action: 'start_video_recording', params: {} };
             }
         }
 

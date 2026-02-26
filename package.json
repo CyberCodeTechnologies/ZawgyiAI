@@ -24,10 +24,13 @@
   "author": "ZawgyiAI Team",
   "license": "MIT",
   "dependencies": {
+    "@line/bot-sdk": "^9.9.0",
+    "@slack/web-api": "^7.14.1",
     "axios": "^1.6.2",
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.6",
     "csurf": "^1.11.0",
+    "discord.js": "^14.25.1",
     "dotenv": "^16.6.1",
     "express": "^4.22.1",
     "express-rate-limit": "^8.2.1",
@@ -49,6 +52,7 @@
     "qrcode-terminal": "^0.12.0",
     "rss-parser": "^3.13.0",
     "telegraf": "^4.16.3",
+    "viber-bot": "^1.0.18",
     "whatsapp-web.js": "^1.34.6",
     "yauzl": "^3.2.0"
   },

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZawgyiAI | Gateway Control Hub</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --bg-card: #0a0a0a;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border-glow: rgba(255, 255, 255, 0.05);
+            --sidebar-width: 280px;
+        }
+        
+        * { cursor: default; }
+        
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.01em;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-deep);
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
+            z-index: 50;
+        }
+
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem;
+            margin: 0.2rem 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15), transparent);
+            color: var(--accent-primary);
+            border-left: 3px solid var(--accent-primary);
+            border-radius: 4px 12px 12px 4px;
+            margin-left: 1rem;
+        }
+
+        .cyber-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cyber-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-glow {
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .terminal-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            padding: 6px 0;
+            font-size: 0.8rem;
+        }
+
+        .log-time { color: #475569; margin-right: 10px; }
+        .log-msg { color: #cbd5e1; }
+        .log-type-error { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .log-type-success { color: #10b981; }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 1rem 1.25rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+
+        .neon-text {
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .bg-mesh {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% -20%, #1e1b4b, transparent),
+                        radial-gradient(circle at 0% 100%, #0c0a09, transparent);
+            z-index: -1;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="h-screen flex">
+    <div class="bg-mesh"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar flex flex-col pt-8">
+        <div class="px-8 mb-10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+                    <img src="/images/logo.png" alt="" class="w-7 h-7">
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter uppercase italic">Zawgyi<span class="text-blue-500">AI</span></h1>
+                    <p class="text-[9px] text-slate-500 font-bold tracking-[0.2em] uppercase">Core Gateway v1.1</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1 space-y-8 overflow-y-auto custom-scroll">
+            <div>
+                <p class="px-8 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-4">Command Center</p>
+                <button onclick="showSection('dashboard')" id="nav-dashboard" class="nav-link w-[calc(100%-1rem)] active">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </button>
+                <button onclick="showSection('chat')" id="nav-chat" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-brain"></i> Agent Interaction
+                </button>
+                <button onclick="showSection('tasks')" id="nav-tasks" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-list-check"></i> Workflows & Tasks
+                </button>
+                <button onclick="showSection('neural')" id="nav-neural" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-microchip"></i> Neural State
+                </button>
+            </div>
+
+            <div>
+                <p class="px-8 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-4">Infrastructure</p>
+                <button onclick="showSection('platforms')" id="nav-platforms" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-satellite-dish"></i> Platform Nodes
+                </button>
+                <button onclick="showSection('agents')" id="nav-agents" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-users-viewfinder"></i> Sub-Agents
+                </button>
+                <button onclick="showSection('capabilities')" id="nav-capabilities" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-microchip"></i> AI Capabilities
+                </button>
+            </div>
+
+            <div>
+                <p class="px-8 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-4">System Core</p>
+                <button onclick="showSection('files')" id="nav-files" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-folder-tree"></i> Digital Explorer
+                </button>
+                <button onclick="showSection('logs')" id="nav-logs" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-terminal"></i> Kernel Logs
+                </button>
+                <button onclick="showSection('config')" id="nav-config" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-sliders"></i> Configuration
+                </button>
+            </div>
+        </div>
+
+        <div class="p-8 border-t border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <div class="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75"></div>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Gateway Online</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="flex-1 flex flex-col min-w-0">
+        <!-- Top Bar -->
+        <header class="h-20 flex items-center justify-between px-10 border-b border-white/5 glass-panel">
+            <div>
+                <h2 id="section-title" class="text-xl font-bold tracking-tight neon-text">Gateway Dashboard</h2>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">System operational status and metrics</p>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="flex flex-col items-end">
+                    <span id="uptime-display" class="text-xs font-mono text-blue-400 font-bold">00:00:00:00</span>
+                    <span class="text-[9px] text-slate-500 uppercase font-bold tracking-tighter">Gateway Uptime</span>
+                </div>
+                <div class="h-8 w-px bg-white/10"></div>
+                <button onclick="refreshAll()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all border border-white/5">
+                    <i class="fas fa-sync-alt text-xs text-slate-400"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Content -->
+        <div id="content-viewport" class="flex-1 overflow-y-auto p-10 custom-scroll">
+            
+            <!-- Dashboard Section -->
+            <section id="section-dashboard" class="space-y-10 animate-fadeIn">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="cyber-card p-6 group">
+                        <div class="flex items-start justify-between mb-4">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-blue-400 transition-colors">Processor Load</span>
+                            <i class="fas fa-microchip text-slate-700"></i>
+                        </div>
+                        <div class="flex items-end gap-3">
+                            <h4 id="cpu-usage" class="text-4xl font-black terminal-font stat-glow">0%</h4>
+                            <div class="flex-1 mb-2 h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div id="cpu-bar" class="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card p-6 group">
+                        <div class="flex items-start justify-between mb-4">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-purple-400 transition-colors">Neural Memory</span>
+                            <i class="fas fa-memory text-slate-700"></i>
+                        </div>
+                        <div class="flex items-end gap-3">
+                            <h4 id="mem-usage" class="text-4xl font-black terminal-font stat-glow">0%</h4>
+                            <div class="flex-1 mb-2 h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div id="mem-bar" class="h-full bg-purple-500 shadow-[0_0_10px_#8b5cf6]" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card p-6 group">
+                        <div class="flex items-start justify-between mb-4">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-green-400 transition-colors">Active Agents</span>
+                            <i class="fas fa-robot text-slate-700"></i>
+                        </div>
+                        <h4 id="agent-count" class="text-4xl font-black terminal-font stat-glow">0</h4>
+                    </div>
+
+                    <div class="cyber-card p-6 group">
+                        <div class="flex items-start justify-between mb-4">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-orange-400 transition-colors">Digital Nodes</span>
+                            <i class="fas fa-network-wired text-slate-700"></i>
+                        </div>
+                        <h4 id="platform-count" class="text-4xl font-black terminal-font stat-glow">0</h4>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <div class="xl:col-span-2 space-y-8">
+                        <div class="cyber-card p-8">
+                            <h3 class="text-sm font-black uppercase tracking-[0.2em] text-slate-500 mb-8 flex items-center gap-3">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Node Infrastructure Status
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20">
+                                            <i class="fas fa-server text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-black uppercase">Main Gateway</p>
+                                            <p class="text-[10px] font-mono text-slate-500 mt-0.5">127.0.0.1:30050</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-[9px] font-black text-green-500 uppercase tracking-widest">Master</div>
+                                </div>
+                                <div class="p-5 rounded-2xl bg-white/[0.01] border border-white/5 flex items-center justify-between opacity-40">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-slate-500/10 flex items-center justify-center text-slate-500">
+                                            <i class="fas fa-microchip text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-black uppercase">Edge Node Alpha</p>
+                                            <p class="text-[10px] font-mono text-slate-500 mt-0.5">Offline</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full bg-white/5 text-[9px] font-black text-slate-600 uppercase tracking-widest">Shadow</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cyber-card p-8">
+                            <div class="flex items-center justify-between mb-8">
+                                <h3 class="text-sm font-black uppercase tracking-[0.2em] text-slate-500 flex items-center gap-3">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> Digital Kernel Logs
+                                </h3>
+                                <button onclick="showSection('logs')" class="text-[10px] font-black text-blue-500 uppercase hover:underline">Open Terminal</button>
+                            </div>
+                            <div id="mini-logs" class="space-y-2 terminal-font text-[11px] h-40 overflow-hidden opacity-80">
+                                <!-- Mini logs will appear here -->
+                                <div class="text-slate-600 italic">Initializing kernel observer...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card p-0 flex flex-col h-full border-blue-500/10">
+                        <div class="p-6 border-b border-white/5 flex items-center justify-between bg-blue-500/[0.02]">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/30">
+                                    <i class="fas fa-ghost"></i>
+                                </div>
+                                <span class="text-xs font-black uppercase tracking-widest">Neural Link</span>
+                            </div>
+                            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        </div>
+                        <div id="mini-chat" class="flex-1 p-6 space-y-4 overflow-y-auto custom-scroll max-h-[500px]">
+                            <div class="text-[11px] text-slate-500 italic text-center py-4">Link established. Awaiting input.</div>
+                        </div>
+                        <div class="p-4 bg-black/40">
+                            <form onsubmit="handleMiniChat(event)" class="relative">
+                                <input id="mini-chat-input" type="text" placeholder="Neural command..." class="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-blue-500/50 transition-all terminal-font pr-10">
+                                <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-500 transition-colors">
+                                    <i class="fas fa-arrow-right text-xs"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="section-chat" class="hidden h-full flex flex-col animate-fadeIn">
+                <div class="flex-1 cyber-card flex flex-col overflow-hidden">
+                    <div class="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-500 border border-blue-500/20 shadow-[0_0_20px_rgba(37,99,235,0.1)]">
+                                <i class="fas fa-robot text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-black uppercase tracking-widest text-sm">ZawgyiAI Gateway Oracle</h3>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Neural link active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="chat-messages" class="flex-1 overflow-y-auto p-8 space-y-6 custom-scroll">
+                        <!-- Messages -->
+                    </div>
+
+                    <div class="p-8 bg-white/[0.01] border-t border-white/5">
+                        <form id="chat-form" onsubmit="handleChatSubmit(event)" class="relative max-w-4xl mx-auto">
+                            <input id="chat-input" type="text" placeholder="Synthesize command or query..." class="w-full bg-white/[0.02] border border-white/10 focus:border-blue-500/50 rounded-2xl px-8 py-5 outline-none transition-all pr-20 terminal-font shadow-2xl text-sm">
+                            <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-xl bg-blue-600 hover:bg-blue-700 flex items-center justify-center text-white transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)]">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Platforms Section -->
+            <section id="section-platforms" class="hidden space-y-8 animate-fadeIn">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight neon-text">Platform Node Control</h3>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Manage external communication interfaces</p>
+                    </div>
+                </div>
+                <div id="platform-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Platform cards -->
+                </div>
+            </section>
+
+            <!-- Agents Section -->
+            <section id="section-agents" class="hidden space-y-8 animate-fadeIn">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight neon-text">Autonomous Agents</h3>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Neural worker orchestration</p>
+                    </div>
+                    <button class="bg-blue-600 hover:bg-blue-700 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)]">
+                        <i class="fas fa-plus mr-2"></i> Spawn Sub-Agent
+                    </button>
+                </div>
+                <div id="agents-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Agent cards -->
+                </div>
+            </section>
+
+            <!-- Logs Section -->
+            <section id="section-logs" class="hidden h-full flex flex-col animate-fadeIn">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight neon-text">System Kernel Logs</h3>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Real-time gateway telemetry</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="clearLogs()" class="text-[10px] font-black uppercase text-slate-500 hover:text-white px-4 py-2 bg-white/5 rounded-lg border border-white/5 transition-all">Flush Buffer</button>
+                    </div>
+                </div>
+                <div id="log-container" class="flex-1 cyber-card p-6 terminal-font text-xs overflow-y-auto custom-scroll bg-black/80">
+                    <!-- Logs -->
+                </div>
+            </section>
+
+            <!-- Files Section -->
+            <section id="section-files" class="hidden h-full flex gap-8 animate-fadeIn">
+                <div class="w-80 cyber-card flex flex-col bg-black/40">
+                    <div class="p-6 border-b border-white/5">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500">File System Explorer</h3>
+                    </div>
+                    <div id="file-tree" class="flex-1 overflow-y-auto p-4 space-y-1 text-xs custom-scroll">
+                        <!-- File list -->
+                    </div>
+                </div>
+                <div class="flex-1 cyber-card flex flex-col">
+                    <div class="h-16 border-b border-white/5 px-8 flex items-center justify-between bg-white/[0.01]">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-file-code text-blue-500"></i>
+                            <span id="current-filename" class="text-xs font-mono font-bold text-slate-400">root/core/gateway.sys</span>
+                        </div>
+                        <button id="save-file-btn" onclick="saveCurrentFile()" class="hidden bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)]">Synchronize</button>
+                    </div>
+                    <textarea id="file-editor" class="flex-1 bg-transparent p-8 terminal-font text-sm outline-none resize-none custom-scroll leading-relaxed text-slate-300" spellcheck="false" placeholder="Awaiting file selection..."></textarea>
+                </div>
+            </section>
+
+            <!-- Tasks & Workflows Section -->
+            <section id="section-tasks" class="hidden space-y-8 animate-fadeIn">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight neon-text">Autonomous Workflows</h3>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Managed task orchestration & automation</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="refreshTasks()" class="bg-white/5 hover:bg-white/10 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-white/5 transition-all">
+                            <i class="fas fa-rotate mr-2"></i> Sync Tasks
+                        </button>
+                        <button onclick="showCreateTaskModal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)]">
+                            <i class="fas fa-plus mr-2"></i> New Workflow
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="tasks-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Task cards will appear here -->
+                    <div class="cyber-card p-10 flex flex-col items-center justify-center text-center opacity-50 border-dashed">
+                        <i class="fas fa-list-check text-4xl text-slate-700 mb-4"></i>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">No active workflows</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Neural State Section -->
+            <section id="section-neural" class="hidden space-y-8 animate-fadeIn">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight neon-text">Autonomous Neural State</h3>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">AI habit learning & 24/7 activity monitoring</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 cyber-card p-8">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-6">Activity Heatmap (Autonomous Habits)</h4>
+                        <div id="habit-list" class="space-y-4">
+                            <!-- Habits will appear here -->
+                            <div class="text-center py-10 opacity-30 italic text-xs">Synchronizing neural memory...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="cyber-card p-8 bg-blue-500/[0.02]">
+                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Core Intelligence</h4>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-400">Self-Learning Rate</span>
+                                <span class="text-xs font-mono text-blue-400">94.2%</span>
+                            </div>
+                            <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500" style="width: 94%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="cyber-card p-8">
+                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">Autonomous 24/7 Status</h4>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                    <span class="text-[10px] font-bold uppercase text-slate-300">Email Watcher Active</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                    <span class="text-[10px] font-bold uppercase text-slate-300">Calendar Sync Online</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                    <span class="text-[10px] font-bold uppercase text-slate-300">Market Intelligence Stream</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cyber-card p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500">Learned Intelligence (Global & Universal)</h4>
+                        <button onclick="refreshInsights()" class="text-[10px] font-black text-blue-500 uppercase hover:underline">Sync Insights</button>
+                    </div>
+                    <div id="insight-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Insights will appear here -->
+                        <div class="col-span-full text-center py-10 opacity-30 italic text-xs">Awaiting global telemetry synchronization...</div>
+                    </div>
+                </div>
+
+                <div class="cyber-card p-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500">Universal Role Matrix (Persona Mastery)</h4>
+                    </div>
+                    <div id="persona-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                        <!-- Personas will appear here -->
+                        <div class="col-span-full text-center py-10 opacity-30 italic text-xs">Initializing persona nodes...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Capabilities Section -->
+            <section id="section-capabilities" class="hidden space-y-8 animate-fadeIn">
+                <div>
+                    <h3 class="text-xl font-black tracking-tight neon-text">Neural Capabilities</h3>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Active AI processing modules</p>
+                </div>
+                <div id="capabilities-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Capability cards -->
+                </div>
+            </section>
+
+            <!-- Config Section -->
+            <section id="section-config" class="hidden h-full flex flex-col animate-fadeIn">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight neon-text">Core Parameters</h3>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Environment variable synchronization</p>
+                    </div>
+                    <button onclick="saveConfig()" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl font-black uppercase tracking-widest text-xs transition-all shadow-[0_0_30px_rgba(37,99,235,0.2)]">
+                        Commit Changes
+                    </button>
+                </div>
+                <div class="flex-1 cyber-card overflow-hidden flex flex-col bg-black/40">
+                    <textarea id="env-editor" class="flex-1 bg-transparent p-10 terminal-font text-sm outline-none resize-none leading-loose text-blue-200/80" spellcheck="false" placeholder="Loading encrypted config..."></textarea>
+                </div>
+                <div class="mt-6 flex items-center gap-3 p-4 bg-orange-500/5 border border-orange-500/10 rounded-2xl">
+                    <i class="fas fa-triangle-exclamation text-orange-500 text-sm"></i>
+                    <p class="text-[10px] text-orange-500/80 font-bold uppercase tracking-widest">Caution: Changes to kernel parameters require a full gateway synchronization (restart).</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // State management
+        let currentSection = 'dashboard';
+        let statsInterval = null;
+        let currentFilePath = '';
+        let logEventSource = null;
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(`nav-${sectionId}`).classList.add('active');
+            
+            const titles = {
+                dashboard: 'Gateway Dashboard',
+                chat: 'Neural Link Interface',
+                platforms: 'Node Infrastructure',
+                agents: 'Agent Orchestration',
+                tasks: 'Autonomous Workflows',
+                neural: 'Autonomous Neural State',
+                capabilities: 'AI Capability Matrix',
+                logs: 'Kernel Telemetry',
+                files: 'Digital Explorer',
+                security: 'Security Guard',
+                config: 'Core Configuration'
+            };
+            document.getElementById('section-title').textContent = titles[sectionId];
+            
+            currentSection = sectionId;
+            
+            if (window.platformInterval) clearInterval(window.platformInterval);
+            
+            if (sectionId === 'files') refreshFiles();
+            if (sectionId === 'agents') refreshAgents();
+            if (sectionId === 'tasks') refreshTasks();
+            if (sectionId === 'neural') {
+                refreshNeuralState();
+                refreshInsights();
+                refreshPersonas();
+            }
+            if (sectionId === 'capabilities') refreshCapabilities();
+            if (sectionId === 'platforms') {
+                refreshPlatforms();
+                window.platformInterval = setInterval(refreshPlatforms, 10000);
+            }
+            if (sectionId === 'config') loadConfig();
+            if (sectionId === 'logs') startLogStream();
+            else stopLogStream();
+        }
+
+        // Chat Logic
+        async function handleChatSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            appendChatMessage('user', message);
+            input.value = '';
+            processChatMessage(message);
+        }
+
+        async function handleMiniChat(event) {
+            event.preventDefault();
+            const input = document.getElementById('mini-chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            appendChatMessage('user', message, 'mini-chat');
+            input.value = '';
+            processChatMessage(message, 'mini-chat');
+        }
+
+        async function processChatMessage(message, targetId = 'chat-messages') {
+            try {
+                const response = await fetch('/api/admin/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    appendChatMessage('agent', data.reply, targetId);
+                }
+            } catch (e) {
+                appendChatMessage('agent', 'Link failure. Re-establishing...', targetId);
+            }
+        }
+
+        function appendChatMessage(role, text, containerId = 'chat-messages') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            
+            if (role === 'user') {
+                div.className = 'flex justify-end';
+                div.innerHTML = `
+                    <div class="chat-bubble bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.2)] rounded-tr-none">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                div.className = 'flex gap-3';
+                div.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/20 flex-shrink-0">
+                        <i class="fas fa-ghost text-[10px]"></i>
+                    </div>
+                    <div class="chat-bubble bg-white/[0.03] border border-white/5 text-slate-300 rounded-tl-none">
+                        ${text}
+                    </div>
+                `;
+            }
+            
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            
+            // Sync mini-chat and main chat if needed
+            if (containerId === 'chat-messages' && document.getElementById('mini-chat')) {
+                const mini = document.getElementById('mini-chat');
+                const miniDiv = div.cloneNode(true);
+                mini.appendChild(miniDiv);
+                mini.scrollTop = mini.scrollHeight;
+            }
+        }
+
+        // Stats & Uptime
+        async function refreshStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const data = await response.json();
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('cpu-usage').textContent = `${Math.round(stats.memory.usage)}%`;
+                    document.getElementById('cpu-bar').style.width = `${stats.memory.usage}%`;
+                    document.getElementById('mem-usage').textContent = `${Math.round(stats.memory.usage)}%`;
+                    document.getElementById('mem-bar').style.width = `${stats.memory.usage}%`;
+                    
+                    const uptime = stats.uptime;
+                    const d = Math.floor(uptime / 86400);
+                    const h = Math.floor((uptime % 86400) / 3600);
+                    const m = Math.floor((uptime % 3600) / 60);
+                    const s = Math.floor(uptime % 60);
+                    document.getElementById('uptime-display').textContent = 
+                        `${String(d).padStart(2,'0')}:${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                }
+            } catch (e) {}
+        }
+
+        // Platforms
+        async function refreshPlatforms() {
+            try {
+                const response = await fetch('/api/admin/platforms');
+                const data = await response.json();
+                if (data.success) {
+                    const grid = document.getElementById('platform-grid');
+                    grid.innerHTML = '';
+                    document.getElementById('platform-count').textContent = data.platforms.length;
+                    
+                    data.platforms.forEach(p => {
+                        const card = document.createElement('div');
+                        card.className = 'cyber-card p-8 space-y-6';
+                        const icon = {
+                            telegram: 'fa-telegram', whatsapp: 'fa-whatsapp', discord: 'fa-discord',
+                            slack: 'fa-slack', line: 'fa-line', viber: 'fa-viber', wechat: 'fa-weixin', web: 'fa-globe'
+                        }[p.name] || 'fa-plug';
+                        
+                        card.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 text-xl border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                                        <i class="fab ${icon}"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-black capitalize text-sm tracking-widest">${p.name}</h4>
+                                        <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">Node ID: ${p.name.substring(0,3).toUpperCase()}-${Math.floor(Math.random()*900)+100}</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end gap-1">
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-[0.2em] ${p.isReady ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-slate-500/10 text-slate-500 border border-slate-500/20'}">
+                                        ${p.isReady ? 'Active' : 'Standby'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="h-px bg-white/5"></div>
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                                <span>Signal Strength</span>
+                                <span class="text-slate-300">98.2%</span>
+                            </div>
+                            <button onclick="togglePlatform('${p.name}', ${p.isReady})" class="w-full py-3 ${p.isReady ? 'bg-white/5 hover:bg-white/10 text-slate-400' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-[0_0_20px_rgba(37,99,235,0.2)]'} rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
+                                ${p.isReady ? 'Deactivate Node' : 'Initialize Node'}
+                            </button>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        async function togglePlatform(name, isReady) {
+            const action = isReady ? 'disconnect' : 'connect';
+            try {
+                const response = await fetch(`/api/admin/platforms/${action}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ platform: name })
+                });
+                const data = await response.json();
+                if (data.success) refreshPlatforms();
+                else alert(`Node synchronization failed: ${name}`);
+            } catch (e) { alert(`Kernel error during ${action}.`); }
+        }
+
+        // Logs
+        function startLogStream() {
+            if (logEventSource) return;
+            const logContainer = document.getElementById('log-container');
+            const miniLogs = document.getElementById('mini-logs');
+            logEventSource = new EventSource('/api/admin/logs');
+            logEventSource.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'history') {
+                    logContainer.innerHTML = '';
+                    miniLogs.innerHTML = '';
+                    data.logs.forEach(log => appendLog(log));
+                } else if (data.type === 'log' || data.type === 'error' || data.type === 'success') {
+                    appendLog(data);
+                } else if (data.type === 'task_update') {
+                    if (currentSection === 'tasks') refreshTasks();
+                }
+            };
+        }
+
+        function stopLogStream() {
+            if (logEventSource) { logEventSource.close(); logEventSource = null; }
+        }
+
+        function appendLog(log) {
+            const logContainer = document.getElementById('log-container');
+            const miniLogs = document.getElementById('mini-logs');
+            const time = new Date(log.timestamp).toLocaleTimeString();
+            
+            const div = document.createElement('div');
+            div.className = `log-entry ${log.type === 'error' ? 'log-type-error' : ''}`;
+            div.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg ${log.type === 'success' ? 'log-type-success' : ''}">${log.message}</span>`;
+            
+            logContainer.appendChild(div);
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            // Mini logs
+            const miniDiv = div.cloneNode(true);
+            miniLogs.appendChild(miniDiv);
+            if (miniLogs.children.length > 15) miniLogs.removeChild(miniLogs.firstChild);
+            miniLogs.scrollTop = miniLogs.scrollHeight;
+        }
+
+        function clearLogs() { 
+            document.getElementById('log-container').innerHTML = ''; 
+            document.getElementById('mini-logs').innerHTML = '<div class="text-slate-600 italic">Buffer flushed. Awaiting new telemetry...</div>';
+        }
+
+        // Files
+        async function refreshFiles(path = '') {
+            try {
+                const response = await fetch(`/api/admin/files/list?path=${path}`);
+                const data = await response.json();
+                if (data.success) {
+                    const tree = document.getElementById('file-tree');
+                    tree.innerHTML = '';
+                    if (path) {
+                        const back = document.createElement('button');
+                        back.className = 'w-full text-left p-2 text-blue-500 hover:bg-white/5 rounded-lg mb-2 flex items-center gap-2';
+                        back.innerHTML = '<i class="fas fa-chevron-left"></i> Parent Directory';
+                        back.onclick = () => refreshFiles(path.split('/').slice(0, -1).join('/'));
+                        tree.appendChild(back);
+                    }
+                    data.files.sort((a,b) => b.isDirectory - a.isDirectory).forEach(file => {
+                        const btn = document.createElement('button');
+                        btn.className = 'w-full text-left p-2 hover:bg-white/5 rounded-lg flex items-center justify-between group transition-all';
+                        btn.innerHTML = `
+                            <div class="flex items-center gap-2">
+                                <i class="fas ${file.isDirectory ? 'fa-folder text-blue-400' : 'fa-file-code text-slate-400'}"></i>
+                                <span class="${file.isDirectory ? 'font-bold text-slate-300' : 'text-slate-400'}">${file.name}</span>
+                            </div>
+                            ${!file.isDirectory ? `<span class="text-[9px] text-slate-600 opacity-0 group-hover:opacity-100">${(file.size/1024).toFixed(1)} KB</span>` : ''}
+                        `;
+                        btn.onclick = () => file.isDirectory ? refreshFiles(`${path}/${file.name}`.replace(/^\//,'')) : loadFile(`${path}/${file.name}`.replace(/^\//,''));
+                        tree.appendChild(btn);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        async function loadFile(path) {
+            try {
+                const response = await fetch(`/api/admin/files/content?path=${path}`);
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('file-editor').value = data.content;
+                    document.getElementById('current-filename').textContent = path;
+                    document.getElementById('save-file-btn').classList.remove('hidden');
+                    currentFilePath = path;
+                }
+            } catch (e) {}
+        }
+
+        async function saveCurrentFile() {
+            const content = document.getElementById('file-editor').value;
+            try {
+                const response = await fetch('/api/admin/files/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: currentFilePath, content })
+                });
+                const data = await response.json();
+                if (data.success) alert('File synchronized successfully.');
+            } catch (e) { alert('Synchronization failure.'); }
+        }
+
+        // Tasks
+        async function refreshTasks() {
+            try {
+                const response = await fetch('/api/admin/tasks');
+                const data = await response.json();
+                if (data.success) {
+                    const grid = document.getElementById('tasks-grid');
+                    if (data.tasks.length === 0) {
+                        grid.innerHTML = `
+                            <div class="col-span-2 cyber-card p-10 flex flex-col items-center justify-center text-center opacity-50 border-dashed">
+                                <i class="fas fa-list-check text-4xl text-slate-700 mb-4"></i>
+                                <p class="text-xs font-bold uppercase tracking-widest text-slate-500">No active workflows</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    grid.innerHTML = '';
+                    data.tasks.forEach(t => {
+                        const card = document.createElement('div');
+                        card.className = 'cyber-card p-6 space-y-4';
+                        const statusColor = {
+                            pending: 'text-slate-500', running: 'text-blue-500', 
+                            completed: 'text-green-500', failed: 'text-red-500'
+                        }[t.status] || 'text-slate-500';
+                        
+                        card.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-black uppercase tracking-widest text-xs">${t.name}</h4>
+                                    <p class="text-[9px] text-slate-500 mt-1">${t.description}</p>
+                                </div>
+                                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-white/5 ${statusColor} border border-white/5">
+                                    ${t.status}
+                                </span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-[9px] font-bold uppercase text-slate-500">
+                                    <span>Progress</span>
+                                    <span>${t.progress}%</span>
+                                </div>
+                                <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div class="h-full bg-blue-500 transition-all duration-500" style="width: ${t.progress}%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-[8px] font-mono text-slate-600">
+                                <span>ID: ${t.id.substring(0,8)}</span>
+                                <span>Step: ${t.currentStep + 1}/${t.steps.length}</span>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        async function showCreateTaskModal() {
+            const name = prompt("Workflow Name:", "Auto System Audit");
+            if (!name) return;
+            
+            const steps = [
+                { capability: 'surveillance', action: 'detect_cameras', params: {} },
+                { capability: 'network', action: 'scan', params: {} },
+                { capability: 'knowledge', action: 'chat', params: { query: "Analyze system status" } }
+            ];
+
+            try {
+                const response = await fetch('/api/admin/tasks/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description: "Automated multi-step system sequence", steps })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showSection('tasks');
+                    refreshTasks();
+                }
+            } catch (e) { alert("Failed to initiate workflow"); }
+         }
+ 
+         // Neural State
+         async function refreshNeuralState() {
+             try {
+                 const response = await fetch('/api/admin/neural/state');
+                 const data = await response.json();
+                 if (data.success) {
+                     const habitList = document.getElementById('habit-list');
+                     if (data.state.habits.length === 0) {
+                         habitList.innerHTML = '<div class="text-center py-10 opacity-30 italic text-xs">Neural memory is currently empty. Waiting for autonomous patterns...</div>';
+                         return;
+                     }
+                     habitList.innerHTML = '';
+                     data.state.habits.reverse().slice(0, 10).forEach(h => {
+                         const div = document.createElement('div');
+                         div.className = 'flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/5 transition-all';
+                         div.innerHTML = `
+                             <div class="flex items-center gap-4">
+                                 <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                     <i class="fas fa-brain text-xs"></i>
+                                 </div>
+                                 <div>
+                                     <p class="text-xs font-bold text-slate-300 uppercase tracking-tight">${h.task}</p>
+                                     <p class="text-[9px] text-slate-500 font-mono">${new Date(h.timestamp).toLocaleString()}</p>
+                                 </div>
+                             </div>
+                             <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${h.status === 'success' ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'} border border-current opacity-50">
+                                 ${h.status}
+                             </span>
+                         `;
+                         habitList.appendChild(div);
+                     });
+                 }
+             } catch (e) {}
+          }
+  
+          async function refreshInsights() {
+              try {
+                  const response = await fetch('/api/admin/knowledge/insights');
+                  const data = await response.json();
+                  if (data.success) {
+                      const grid = document.getElementById('insight-grid');
+                      const allInsights = [
+                          ...data.insights.market_trends.map(i => ({ ...i, type: 'Market' })),
+                          ...data.insights.business_intelligence.map(i => ({ ...i, type: 'Business' })),
+                          ...data.insights.art_and_culture.map(i => ({ ...i, type: 'Art' })),
+                          ...data.insights.sports_and_golf.map(i => ({ ...i, type: 'Sports' })),
+                          ...data.insights.science_and_universe.map(i => ({ ...i, type: 'Science' }))
+                      ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                      if (allInsights.length === 0) {
+                          grid.innerHTML = '<div class="col-span-full text-center py-10 opacity-30 italic text-xs">Global intelligence is currently aggregating...</div>';
+                          return;
+                      }
+
+                      grid.innerHTML = '';
+                      allInsights.slice(0, 6).forEach(i => {
+                          const div = document.createElement('div');
+                          div.className = 'cyber-card p-6 border-blue-500/10 hover:border-blue-500/30 transition-all';
+                          div.innerHTML = `
+                              <div class="flex justify-between items-start mb-4">
+                                  <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20">${i.type}</span>
+                                  <span class="text-[8px] font-mono text-slate-600">${new Date(i.timestamp).toLocaleTimeString()}</span>
+                              </div>
+                              <h5 class="text-xs font-black uppercase tracking-tight text-slate-300 mb-2">${i.title}</h5>
+                              <p class="text-[10px] text-slate-500 leading-relaxed">${i.content}</p>
+                          `;
+                          grid.appendChild(div);
+                      });
+                  }
+              } catch (e) {}
+           }
+   
+           async function refreshPersonas() {
+               try {
+                   const response = await fetch('/api/admin/personas');
+                   const data = await response.json();
+                   if (data.success) {
+                       const grid = document.getElementById('persona-grid');
+                       grid.innerHTML = '';
+                       data.personas.forEach(p => {
+                           const card = document.createElement('div');
+                           card.className = 'cyber-card p-4 text-center space-y-3 hover:border-blue-500/40 transition-all cursor-pointer';
+                           card.onclick = () => setPersona(p.id);
+                           card.innerHTML = `
+                               <div class="w-10 h-10 mx-auto rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                                   <i class="fas ${getPersonaIcon(p.id)} text-sm"></i>
+                               </div>
+                               <h6 class="text-[10px] font-black uppercase tracking-widest">${p.name}</h6>
+                               <p class="text-[8px] text-slate-500 font-bold uppercase">${p.id}</p>
+                           `;
+                           grid.appendChild(card);
+                       });
+                   }
+               } catch (e) {}
+           }
+
+           function getPersonaIcon(id) {
+               return {
+                   programmer: 'fa-code', designer: 'fa-palette',
+                   golfer: 'fa-golf-ball-tee', artist: 'fa-brush',
+                   singer: 'fa-microphone'
+               }[id] || 'fa-user-ninja';
+           }
+
+           async function setPersona(personaId) {
+               try {
+                   const response = await fetch('/api/admin/personas/set', {
+                       method: 'POST',
+                       headers: { 'Content-Type': 'application/json' },
+                       body: JSON.stringify({ personaId })
+                   });
+                   const data = await response.json();
+                   if (data.success) alert(`Neural Interface: Shifted to ${personaId.toUpperCase()} role.`);
+               } catch (e) { alert("Neural shift failure."); }
+           }
+   
+            // Capabilities
+        async function refreshCapabilities() {
+            try {
+                const response = await fetch('/api/capabilities');
+                const data = await response.json();
+                if (data.success) {
+                    const grid = document.getElementById('capabilities-grid');
+                    grid.innerHTML = '';
+                    data.capabilities.forEach(c => {
+                        const card = document.createElement('div');
+                        card.className = 'cyber-card p-6 flex flex-col items-center text-center space-y-3';
+                        card.innerHTML = `
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 border border-purple-500/20">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <h4 class="text-xs font-black uppercase tracking-widest">${c}</h4>
+                            <span class="text-[9px] text-slate-500 font-bold">READY</span>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        // Agents
+        async function refreshAgents() {
+            try {
+                const response = await fetch('/api/admin/agents');
+                const data = await response.json();
+                if (data.success) {
+                    const grid = document.getElementById('agents-grid');
+                    grid.innerHTML = '';
+                    document.getElementById('agent-count').textContent = data.agents.length;
+                    data.agents.forEach(a => {
+                        const card = document.createElement('div');
+                        card.className = 'cyber-card p-6 space-y-4';
+                        card.innerHTML = `
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 border border-green-500/20">
+                                    <i class="fas fa-ghost"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-black uppercase tracking-widest">${a.name}</h4>
+                                    <p class="text-[9px] text-slate-500 font-bold uppercase mt-1">Status: ${a.status}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                                <span>Platform</span>
+                                <span class="text-blue-400">${a.platform}</span>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        // Config
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/admin/config/env');
+                const data = await response.json();
+                if (data.success) document.getElementById('env-editor').value = data.content;
+            } catch (e) {}
+        }
+
+        async function saveConfig() {
+            const content = document.getElementById('env-editor').value;
+            try {
+                const response = await fetch('/api/admin/config/env', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content })
+                });
+                const data = await response.json();
+                if (data.success) alert('Kernel configuration updated.');
+            } catch (e) { alert('Configuration sync failure.'); }
+        }
+
+        function refreshAll() {
+            refreshStats();
+            refreshPlatforms();
+            refreshAgents();
+            refreshCapabilities();
+            if (currentSection === 'files') refreshFiles();
+        }
+
+        // Initialize
+        refreshAll();
+        statsInterval = setInterval(refreshStats, 2000);
+        showSection('dashboard');
+    </script>
+</body>
+</html>

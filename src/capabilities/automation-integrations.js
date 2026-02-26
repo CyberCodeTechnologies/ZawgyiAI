@@ -1,11 +1,13 @@
 const { ZawgyiCapability } = require('../core/zawgyi-capability');
 const fs = require('fs-extra');
 const path = require('path');
+const cron = require('node-cron');
 
 class AutomationIntegrationsCapability extends ZawgyiCapability {
     constructor() {
         super('automation-integrations', 'Automation & Integrations - Google Services, Smart Homes, Health Monitoring, and Scheduled Jobs');
         
+        this.scheduledJobsList = new Map();
         this.setupActions();
         this.setupAutomationStorage();
     }
@@ -256,55 +258,31 @@ class AutomationIntegrationsCapability extends ZawgyiCapability {
     }
 
     async scheduledJobs(params, userId) {
-        const { jobs = [], schedule = 'daily', notifications = [] } = params;
+        const { action = 'list', job_name, schedule = '* * * * *', task_type = 'notification' } = params;
         
-        if (!jobs || !Array.isArray(jobs)) {
-            throw new Error('Jobs array is required');
+        if (action === 'create' && job_name) {
+            console.log(`⏰ Creating scheduled job: ${job_name} (${schedule})`);
+            const job = cron.schedule(schedule, () => {
+                console.log(`🚀 Executing job ${job_name}: ${task_type}`);
+                if (this.gateway) {
+                    this.gateway.notifyAll(`🔔 *Scheduled Job*: ${job_name} is running now.`);
+                }
+            });
+            this.scheduledJobsList.set(job_name, { job, schedule, task_type });
+            return { success: true, message: `Job ${job_name} scheduled.` };
+        } else if (action === 'stop' && job_name) {
+            const j = this.scheduledJobsList.get(job_name);
+            if (j) {
+                j.job.stop();
+                this.scheduledJobsList.delete(job_name);
+                return { success: true, message: `Job ${job_name} stopped.` };
+            }
         }
-
-        console.log(`⏰ Setting up ${jobs.length} scheduled jobs`);
-
-        try {
-            const scheduler = {
-                jobs: jobs,
-                schedule: schedule,
-                notifications: notifications,
-                scheduler_id: 'scheduler_' + Date.now(),
-                created_by: userId,
-                created_at: new Date().toISOString()
-            };
-
-            // Validate jobs
-            scheduler.validated_jobs = await this.validateScheduledJobs(jobs);
-            
-            // Set up cron schedules
-            scheduler.cron_jobs = await this.setupCronJobs(scheduler.validated_jobs, schedule);
-            
-            // Configure notifications
-            scheduler.notification_config = await this.configureJobNotifications(notifications);
-            
-            // Create monitoring dashboard
-            scheduler.dashboard = await this.createSchedulerDashboard(scheduler);
-            
-            // Start scheduler
-            scheduler.status = await this.startScheduler(scheduler);
-
-            // Save scheduler configuration
-            await this.saveScheduler(scheduler);
-
-            return {
-                message: `Scheduled jobs setup completed`,
-                scheduler: scheduler,
-                jobs_scheduled: scheduler.validated_jobs.length,
-                next_runs: this.getNextRunTimes(scheduler.cron_jobs),
-                status: 'success',
-                timestamp: new Date().toISOString()
-            };
-
-        } catch (error) {
-            console.error('Scheduled jobs error:', error);
-            throw new Error(`Failed to setup scheduled jobs: ${error.message}`);
-        }
+        
+        return { 
+            success: true, 
+            jobs: Array.from(this.scheduledJobsList.entries()).map(([name, data]) => ({ name, schedule: data.schedule, type: data.task_type })) 
+        };
     }
 
     async browserAutomation(params, userId) {
