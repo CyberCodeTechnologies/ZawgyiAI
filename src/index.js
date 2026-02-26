@@ -614,6 +614,32 @@ class ZawgyiAI {
             }
         });
 
+        this.app.post('/api/admin/agents/spawn', (req, res) => {
+            try {
+                if (!this.core.agentManager) {
+                    return res.status(500).json({ success: false, error: 'Agent manager not initialized' });
+                }
+                const { name } = req.body || {};
+                const agent = this.core.agentManager.createAgent('sub-agent', {
+                    name: name || 'ZawgyiAI Sub-Agent'
+                });
+                agent.platform = 'admin';
+                agent.startTime = Date.now();
+                res.json({
+                    success: true,
+                    agent: {
+                        id: agent.id,
+                        name: agent.name,
+                        status: agent.status,
+                        platform: agent.platform,
+                        uptime: 0
+                    }
+                });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
         // Chat simulation (OpenClaw style)
         this.app.post('/api/admin/chat', async (req, res) => {
             try {
@@ -907,6 +933,9 @@ class ZawgyiAI {
                         // Check if it's a constructor function
                         if (typeof CapabilityClass === 'function') {
                             const capability = new CapabilityClass(this.gateway);
+                            if (capability && capability.name === 'knowledge') {
+                                capability.core = this.core;
+                            }
                             
                             // Register the capability with the core
                             if (capability.name && this.core.capabilityRegistry) {
