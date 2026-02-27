@@ -768,6 +768,81 @@ class ZawgyiAI {
             });
         });
 
+        this.app.get('/api/admin/providers', (req, res) => {
+            try {
+                const platformMap = new Map(this.gateway.platforms);
+                const chat = [
+                    'WhatsApp','Telegram','Discord','Slack','Signal',
+                    'iMessage (imsg)','iMessage (BlueBubbles)','Microsoft Teams',
+                    'Nextcloud Talk','Matrix','Nostr','Tlon Messenger','Zalo','Zalo Personal','WebChat'
+                ].map(n => {
+                    const key = n.toLowerCase().split(' ')[0]; // basic key
+                    const p = platformMap.get(key);
+                    return {
+                        name: n,
+                        status: p ? (p.status || 'unknown') : 'planned',
+                        isReady: p ? (p.client ? (p.client.isReady !== undefined ? p.client.isReady : true) : false) : false
+                    };
+                });
+                const aiModels = [
+                    { name: 'OpenAI', configured: !!process.env.OPENAI_API_KEY },
+                    { name: 'Anthropic', configured: !!process.env.ANTHROPIC_API_KEY },
+                    { name: 'Google', configured: !!process.env.GOOGLE_API_KEY },
+                    { name: 'MiniMax', configured: !!process.env.MINIMAX_API_KEY },
+                    { name: 'xAI', configured: !!process.env.XAI_API_KEY },
+                    { name: 'Vercel AI Gateway', configured: !!process.env.VERCEL_AI_GATEWAY_KEY },
+                    { name: 'OpenRouter', configured: !!process.env.OPENROUTER_API_KEY },
+                    { name: 'Mistral', configured: !!process.env.MISTRAL_API_KEY },
+                    { name: 'DeepSeek', configured: !!process.env.DEEPSEEK_API_KEY },
+                    { name: 'GLM', configured: !!process.env.GLM_API_KEY },
+                    { name: 'Perplexity', configured: !!process.env.PERPLEXITY_API_KEY },
+                    { name: 'Hugging Face', configured: !!process.env.HF_API_TOKEN },
+                    { name: 'Ollama', configured: !!process.env.OLLAMA_HOST },
+                    { name: 'LM Studio', configured: !!process.env.LMSTUDIO_HOST }
+                ];
+                const productivity = [
+                    { name: 'Email', configured: !!process.env.EMAIL_USER && !!process.env.EMAIL_PASS },
+                    { name: 'Calendar', configured: !!process.env.GOOGLE_CALENDAR_ID || !!process.env.GOOGLE_CLIENT_EMAIL },
+                    { name: 'Notion', configured: !!process.env.NOTION_TOKEN },
+                    { name: 'Obsidian', configured: !!process.env.OBSIDIAN_VAULT },
+                    { name: 'Trello', configured: !!process.env.TRELLO_KEY },
+                    { name: 'GitHub', configured: !!process.env.GITHUB_TOKEN }
+                ];
+                const tools = [
+                    { name: 'Browser', active: !!this.core.capabilityRegistry.get('surveillance') },
+                    { name: 'Voice', active: !!this.core.capabilityRegistry.get('voice') },
+                    { name: 'Cron', active: !!this.core.scheduler },
+                    { name: 'Webhooks', active: true },
+                    { name: '1Password', active: !!process.env.OP_CONNECT_TOKEN },
+                    { name: 'Weather', active: !!this.core.capabilityRegistry.get('network') }
+                ];
+                const media = [
+                    { name: 'Camera', active: !!this.core.capabilityRegistry.get('surveillance') },
+                    { name: 'Image Gen', active: !!process.env.OPENAI_API_KEY || !!process.env.HF_API_TOKEN },
+                    { name: 'GIF Search', active: !!process.env.GIPHY_API_KEY },
+                    { name: 'Peekaboo', active: !!this.core.capabilityRegistry.get('surveillance') }
+                ];
+                const platforms = [
+                    { name: 'Windows', active: process.platform === 'win32' },
+                    { name: 'Linux', active: process.platform === 'linux' },
+                    { name: 'macOS', active: process.platform === 'darwin' }
+                ];
+                res.json({
+                    success: true,
+                    providers: {
+                        chat,
+                        ai_models: aiModels,
+                        productivity,
+                        tools,
+                        media,
+                        platforms
+                    }
+                });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
         // Main processing endpoint
         this.app.post('/process', this.gateway.expressMiddleware());
 
@@ -816,6 +891,19 @@ class ZawgyiAI {
                 const limit = parseInt(req.query.limit) || 10;
                 const result = await newsCap.getHeadlines(category, limit);
                 res.json({ success: true, data: result });
+            } catch (error) {
+                res.status(500).json({ success: false, error: error.message });
+            }
+        });
+
+        // FeatureHub execution API
+        this.app.post('/api/providers/execute', async (req, res) => {
+            try {
+                const { action, params, userId } = req.body || {};
+                const featureHub = this.core.capabilityRegistry.get('feature-hub');
+                if (!featureHub) return res.status(404).json({ success: false, error: 'feature-hub capability not found' });
+                const result = await featureHub.execute(action, params || {}, userId || 'admin');
+                res.json(result);
             } catch (error) {
                 res.status(500).json({ success: false, error: error.message });
             }

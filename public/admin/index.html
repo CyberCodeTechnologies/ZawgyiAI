@@ -176,6 +176,9 @@
                 <button onclick="showSection('platforms')" id="nav-platforms" class="nav-link w-[calc(100%-1rem)]">
                     <i class="fas fa-satellite-dish"></i> Platform Nodes
                 </button>
+                <button onclick="showSection('providers')" id="nav-providers" class="nav-link w-[calc(100%-1rem)]">
+                    <i class="fas fa-plug"></i> Providers Overview
+                </button>
                 <button onclick="showSection('agents')" id="nav-agents" class="nav-link w-[calc(100%-1rem)]">
                     <i class="fas fa-users-viewfinder"></i> Sub-Agents
                 </button>
@@ -348,6 +351,42 @@
                                 </button>
                             </form>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Providers Section -->
+            <section id="section-providers" class="hidden space-y-8 animate-fadeIn">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight neon-text">Providers Overview</h3>
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Chat, AI models, tools and platforms</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <div class="cyber-card p-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Chat Providers</h4>
+                        <div id="provider-chat-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+                    <div class="cyber-card p-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">AI Models</h4>
+                        <div id="provider-ai-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+                    <div class="cyber-card p-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Productivity</h4>
+                        <div id="provider-productivity-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+                    <div class="cyber-card p-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Tools & Automation</h4>
+                        <div id="provider-tools-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+                    <div class="cyber-card p-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Media & Creative</h4>
+                        <div id="provider-media-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    </div>
+                    <div class="cyber-card p-6">
+                        <h4 class="text-xs font-black uppercase tracking-widest text-slate-500 mb-4">Platforms</h4>
+                        <div id="provider-platforms-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
                 </div>
             </section>
@@ -1171,6 +1210,61 @@
             } catch (e) {}
         }
 
+        async function refreshProviders() {
+            try {
+                const response = await fetch('/api/admin/providers');
+                const data = await response.json();
+                if (!data.success) return;
+                const renderItem = (name, status, accent) => {
+                    const color = accent || 'blue';
+                    const ok = status === true || status === 'active';
+                    const badge = ok ? `bg-green-500/10 border border-green-500/20 text-green-500` : `bg-slate-500/10 border border-slate-500/20 text-slate-500`;
+                    return `
+                        <div class="p-4 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-${color}-500/10 flex items-center justify-center text-${color}-500 border border-${color}-500/20">
+                                    <i class="fas fa-plug"></i>
+                                </div>
+                                <span class="text-xs font-black uppercase tracking-widest">${name}</span>
+                            </div>
+                            <div class="px-3 py-1 rounded-full ${badge} text-[9px] font-black uppercase tracking-widest">${ok ? 'Active' : 'Not Set'}</div>
+                        </div>
+                    `;
+                };
+                const chatGrid = document.getElementById('provider-chat-grid');
+                chatGrid.innerHTML = '';
+                data.providers.chat.forEach(p => {
+                    const active = p.status === 'active' && p.isReady;
+                    chatGrid.innerHTML += renderItem(p.name, active, 'purple');
+                });
+                const aiGrid = document.getElementById('provider-ai-grid');
+                aiGrid.innerHTML = '';
+                data.providers.ai_models.forEach(m => {
+                    aiGrid.innerHTML += renderItem(m.name, m.configured, 'cyan');
+                });
+                const prodGrid = document.getElementById('provider-productivity-grid');
+                prodGrid.innerHTML = '';
+                data.providers.productivity.forEach(x => {
+                    prodGrid.innerHTML += renderItem(x.name, x.configured, 'orange');
+                });
+                const toolsGrid = document.getElementById('provider-tools-grid');
+                toolsGrid.innerHTML = '';
+                data.providers.tools.forEach(t => {
+                    toolsGrid.innerHTML += renderItem(t.name, t.active, 'blue');
+                });
+                const mediaGrid = document.getElementById('provider-media-grid');
+                mediaGrid.innerHTML = '';
+                data.providers.media.forEach(t => {
+                    mediaGrid.innerHTML += renderItem(t.name, t.active, 'pink');
+                });
+                const platformsGrid = document.getElementById('provider-platforms-grid');
+                platformsGrid.innerHTML = '';
+                data.providers.platforms.forEach(t => {
+                    platformsGrid.innerHTML += renderItem(t.name, t.active, 'green');
+                });
+            } catch (e) {}
+        }
+
         // Config
         async function loadConfig() {
             try {
@@ -1198,6 +1292,7 @@
             refreshPlatforms();
             refreshAgents();
             refreshCapabilities();
+            refreshProviders();
             if (currentSection === 'files') refreshFiles();
         }
 
